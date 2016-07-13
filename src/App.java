@@ -15,33 +15,23 @@ public class App extends PApplet {
         }
     }
 
-    Crossroad crStart = null;
-    Crossroad crFinish = null;
+    private Crossroad crossroadStart = null;
+    private Crossroad crossroadFinish = null;
 
-    Driver defaultDriver;
-    Road nearestRoad;
+    private Driver defaultDriver;
 
-    public boolean drawRoads = false;
-    public boolean drawAgents = true;
-    public boolean drawTracks = true;
-    public boolean drawCrossroads = false;
-    public boolean drawNodes = true;
-
-    public boolean drawEdges = true;
-
-    public boolean drawGraphRoute = true;
-    public boolean drawGraphMode = true;
-    public boolean drawRoute = true;
-    public boolean drawNearest = true;
+    private boolean drawRoads = true;
+    private boolean drawAgents = true;
+    private boolean drawTracks = true;
+    private boolean drawGraphMode = true;
 
     private int currentGraphIndex = 0;
 
-    ArrayList<PVector> currentRoute;
+    private ArrayList<PVector> currentRoute;
 
-    City city;
-    Camera camera;
-
-    SphericalMercator projector;
+    private City city;
+    private Camera camera;
+    private SphericalMercator projector;
 
     public void settings() {
         fullScreen();
@@ -79,13 +69,13 @@ public class App extends PApplet {
         setEndPoint(new LatLon(55.743206f, 37.607254f));
 
         defaultDriver = new Driver(city, 2, projector);
-        Route r = defaultDriver.navigate(crStart, crFinish);
+        Route r = defaultDriver.navigate(crossroadStart, crossroadFinish);
         if (r != null) currentRoute = r.bake();
 
         emitAgent();
     }
 
-    Driver createAgent() {
+    private Driver createAgent() {
         float maxSpeed = random(1, 10);
         float maxForce = random(1, 4);
 
@@ -109,24 +99,14 @@ public class App extends PApplet {
 
     public void draw() {
         background(0);
-
         LatLon mouse = camera.getCoordAtScreen(mouseX, mouseY);
-        // nearestRoad = city.graph(0).findNearestRoadTo(mouse);
-
-        // // Route route = null;
-        // GraphNode[] route = null;
-        // if(drawGraphRoute && crFinish != null){
-        //   int nearestCrossroadId = city.getCrossroadIndex(n);
-        //   int finishCrossroadId = city.getCrossroadIndex(crFinish);
-        //   route = defaultDriver.findRoute(nearestCrossroadId, finishCrossroadId);
-        // }
 
         if (mousePressed) {
             if (mouseButton == LEFT) setStartPoint(mouse);
             if (mouseButton == RIGHT) setEndPoint(mouse);
 
-            if (crStart != null && crFinish != null) {
-                Route r = defaultDriver.navigate(crStart, crFinish);
+            if (crossroadStart != null && crossroadFinish != null) {
+                Route r = defaultDriver.navigate(crossroadStart, crossroadFinish);
                 if (r != null) currentRoute = r.bake();
             }
         }
@@ -135,66 +115,44 @@ public class App extends PApplet {
         camera.update(this);
         city.update();
 
-        // city.drawCrossroads();
-        drawCityRoads(city, null);
-
         if (currentRoute != null) {
             drawCurrentRoute();
         }
 
-        // // stroke(255);
-        // // noFill();
-        // // PVector pmouse = projector.project(mouse);
-        // // ellipseMode(CENTER);
-        // // ellipse(pmouse.x, pmouse.y, 10, 10);
-
-        // if (drawNodes) drawGraphNodes(city.graph.getNodeArray());
-        // if (drawEdges) drawGraphEdges(city.graph.getAllEdgeArray());
-        // if (drawRoads) city.drawRoads(drawNearest ? nearestRoad : null);
-        // if (drawCrossroads) city.drawCrossroads();
+        if (drawRoads) drawCityRoads(city, null);
         drawCityAgents(city, drawAgents, drawTracks);
 
-        // // drawEdgeProj(nearestRoad, mouse);
-
-        // int routelength = 0;
-        // if(route != null){
-        //   if(drawRoute){
-        //     if(drawGraphMode) drawGraphRoute(route);
-        //     else drawRoute(new Route(city, route));
-        //   }
-        // }
-
-        // if(crStart != null && crFinish != null){
+        // if(crossroadStart != null && crossroadFinish != null){
         //   noFill();
         //   stroke(0, 0, 255);
         //   strokeWeight(1);
         //   ellipseMode(CENTER);
         //   PVector c;
-        //   c = projector.project(crStart.coord);
+        //   c = projector.project(crossroadStart.coord);
         //   ellipse(c.x, c.y, 5, 5);
 
-        //   c = projector.project(crFinish.coord);
+        //   c = projector.project(crossroadFinish.coord);
         //   ellipse(c.x, c.y, 10, 10);
         // }
 
         popMatrix();
     }
 
-    public void setStartPoint(LatLon ll) {
+    private void setStartPoint(LatLon ll) {
         PVector v = projector.project(ll);
         Crossroad n = city.graph(0).findNearestCrossroadTo(v);
-        crStart = n;
+        crossroadStart = n;
     }
 
-    public void setEndPoint(LatLon ll) {
+    private void setEndPoint(LatLon ll) {
         PVector v = projector.project(ll);
         Crossroad n = city.graph(0).findNearestCrossroadTo(v);
-        crFinish = n;
+        crossroadFinish = n;
     }
 
-    public void emitAgent() {
+    private void emitAgent() {
         Driver d = createAgent();
-        Route r = d.navigate(crStart, crFinish);
+        Route r = d.navigate(crossroadStart, crossroadFinish);
         d.driveWith(r);
     }
 
@@ -260,76 +218,6 @@ public class App extends PApplet {
         popStyle();
     }
 
-// void drawEdgeProj(GraphEdge ge, LatLon ll){
-//   if(ge == null) return;
-
-//   PVector v = projector.project(ll);
-
-//   LatLon fromCoord = city.graphs.get(currentGraphIndex).getGraphNodeCoord(ge.from());
-//   LatLon toCoord = city.graphs.get(currentGraphIndex).getGraphNodeCoord(ge.to());
-
-//   PVector p1 = projector.project(fromCoord);
-//   PVector p2 = projector.project(toCoord);
-
-//   PVector p = GeometryUtils.projectVertexOnLine(v, p1, p2);
-
-//   stroke(#ff0000);
-//   fill(#990000);
-//   ellipseMode(CENTER);
-//   ellipse(p.x, p.y, 5, 5);
-// }
-
-// void drawGraphNodes(GraphNode[] nodes){
-//   pushStyle();
-//   float s = 10;
-//   for(GraphNode node : nodes){
-//     LatLon nodeCoord = city.graphs.get(currentGraphIndex).getGraphNodeCoord(node);
-//     PVector p = projector.project(nodeCoord);
-
-//     noStroke();
-//     fill(0, 255, 0, 75);
-//     ellipse(p.x, p.y, s, s);
-
-//     noStroke();
-//     fill(255, 75);
-//     text(str(node.xf()) + ";" + str(node.yf()), p.x, p.y);
-//   }
-//   popStyle();
-// }
-
-// void drawGraphEdges(GraphEdge[] edges){
-//   pushStyle();
-//   noFill();
-
-//   GraphEdge nearest = null;
-//   if(nearestRoad != null) nearest = nearestRoad.edge;
-
-//   for(GraphEdge ge : edges){
-//     stroke(200, 50);
-//     if(drawNearest && ge == nearest) stroke(#ffff00);
-
-//     LatLon fromCoord = city.graphs.get(currentGraphIndex).getGraphNodeCoord(ge.from());
-//     LatLon toCoord = city.graphs.get(currentGraphIndex).getGraphNodeCoord(ge.to());
-//     PVector p1 = projector.project(fromCoord);
-//     PVector p2 = projector.project(toCoord);
-
-//     line(p1.x, p1.y, p2.x, p2.y);
-
-//     pushMatrix();
-//     PVector diff = PVector.sub(p2, p1);
-//     float a = atan2(diff.y, diff.x);
-//     translate(p2.x, p2.y);
-//     rotate(a - HALF_PI);
-
-//     float s = 15;
-//     float sr = 3;
-//     triangle(-s/sr, -s, s/sr, -s, 0, 0);
-
-//     popMatrix();
-//   }
-//   popStyle();
-// }
-
     public void drawCurrentRoute() {
         strokeWeight(1);
         stroke(235);
@@ -349,39 +237,6 @@ public class App extends PApplet {
         if (currentGraphIndex > 0) currentGraphIndex--;
     }
 
-    public void keyPressed() {
-        // float step = map(camera.zoom, 0, 1, 100, 10);
-        // float step = .01 / camera.getZoom();
-        float step = .0025f;
-        if (keyCode == UP) camera.moveTarget(step, 0);
-        if (keyCode == DOWN) camera.moveTarget(-step, 0);
-        if (keyCode == LEFT) camera.moveTarget(0, -step);
-        if (keyCode == RIGHT) camera.moveTarget(0, step);
-
-        // if (key == '-') camera.zoomOut();
-        // if (key == '=') camera.zoomIn();
-        // if (key == '0') camera.lookAt(center);
-        if (key == ' ') saveFrame("../frame-###.jpg");
-
-        if (key == 'g') bakeGraph();
-        if (key == 'r') drawGraphMode = !drawGraphMode;
-
-        if (key == 'e') emitAgent();
-
-        if (key == ']') selectNextGraph();
-        if (key == '[') selectPrevGraph();
-
-        if (key == '1') drawRoads = !drawRoads;
-        if (key == '2') drawAgents = !drawAgents;
-        if (key == '3') drawCrossroads = !drawCrossroads;
-        if (key == '4') drawNodes = !drawNodes;
-        if (key == '5') drawEdges = !drawEdges;
-        if (key == '6') drawGraphRoute = !drawGraphRoute;
-        if (key == '7') drawRoute = !drawRoute;
-        if (key == '8') drawNearest = !drawNearest;
-        if (key == '9') drawTracks = !drawTracks;
-    }
-
     public void drawTrack(Track track) {
         noFill();
         // stroke(255, 255, 0, 50);
@@ -390,6 +245,13 @@ public class App extends PApplet {
         beginShape();
         for (PVector v : track.history) vertex(v.x, v.y);
         endShape();
+    }
+
+    public void drawCityAgents(City city, boolean drawVehicle, boolean drawTrack) {
+        for (Vehicle a : city.vehicles) {
+            if (drawVehicle) drawVehicle(a);
+            if (drawTrack) drawTrack(a.track);
+        }
     }
 
     public void drawVehicle(Vehicle v) {
@@ -417,17 +279,37 @@ public class App extends PApplet {
         popStyle();
     }
 
-    public void drawCityAgents(City city, boolean drawVehicle, boolean drawTrack) {
-        for (Vehicle a : city.vehicles) {
-            if (drawVehicle) drawVehicle(a);
-            if (drawTrack) drawTrack(a.track);
-        }
+    public void keyPressed() {
+        // float step = map(camera.zoom, 0, 1, 100, 10);
+        // float step = .01 / camera.getZoom();
+        float step = .0025f;
+        if (keyCode == UP) camera.moveTarget(step, 0);
+        if (keyCode == DOWN) camera.moveTarget(-step, 0);
+        if (keyCode == LEFT) camera.moveTarget(0, -step);
+        if (keyCode == RIGHT) camera.moveTarget(0, step);
+
+        // if (key == '-') camera.zoomOut();
+        // if (key == '=') camera.zoomIn();
+        // if (key == '0') camera.lookAt(center);
+        if (key == ' ') saveFrame("../frame-###.jpg");
+
+        if (key == 'g') bakeGraph();
+        if (key == 'r') drawGraphMode = !drawGraphMode;
+
+        if (key == 'e') emitAgent();
+
+        if (key == ']') selectNextGraph();
+        if (key == '[') selectPrevGraph();
+
+        if (key == '1') drawRoads = !drawRoads;
+        if (key == '2') drawAgents = !drawAgents;
+        if (key == '3') drawTracks = !drawTracks;
+//        if (key == '4') drawNodes = !drawNodes;
+//        if (key == '5') drawEdges = !drawEdges;
+//        if (key == '6') drawGraphRoute = !drawGraphRoute;
+//        if (key == '7') drawRoute = !drawRoute;
+//        if (key == '8') drawNearest = !drawNearest;
     }
-
-    //    public void drawCrossroads() {
-//        // for (CityGraph cg : graphs) cg.drawCrossroads();
-//    }
-
 
     public void drawCityRoads(City city, Road selected) {
         for (CityGraph cg : city.graphs) drawRoads(cg, selected);
