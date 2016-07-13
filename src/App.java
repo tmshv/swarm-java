@@ -1,5 +1,4 @@
 import geojson.*;
-import pathfinder.GraphNode;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -42,12 +41,10 @@ public class App extends PApplet {
         background(0);
 
         projector = new SphericalMercator(0.5d);
-
         camera = new Camera(projector);
 
         IFeatureCollection geo;
 
-        // geo = new GeoJSON("../sample.geojson");
         geo = new GeoJSON(loadJSONObject("sample_roads-EPSG4326.geojson"));
         FeatureExploder fx = new FeatureExploder(geo);
         CityGraph streets = new CityGraph(fx, projector);
@@ -139,14 +136,12 @@ public class App extends PApplet {
 
     private void setStartPoint(LatLon ll) {
         PVector v = projector.project(ll);
-        Crossroad n = city.graph(0).findNearestCrossroadTo(v);
-        crossroadStart = n;
+        crossroadStart = city.graph(currentGraphIndex).findNearestCrossroadTo(v);
     }
 
     private void setEndPoint(LatLon ll) {
         PVector v = projector.project(ll);
-        Crossroad n = city.graph(0).findNearestCrossroadTo(v);
-        crossroadFinish = n;
+        crossroadFinish = city.graph(currentGraphIndex).findNearestCrossroadTo(v);
     }
 
     private void emitAgent() {
@@ -155,69 +150,7 @@ public class App extends PApplet {
         d.driveWith(r);
     }
 
-    public void drawGraphRoute(GraphNode[] route) {
-        pushStyle();
-
-        for (int i = 0; i < route.length - 1; i++) {
-            GraphNode n1 = route[i];
-            GraphNode n2 = route[i + 1];
-
-            PVector p1 = city.graphs.get(currentGraphIndex).getGraphNodeCoord(n1);
-            PVector p2 = city.graphs.get(currentGraphIndex).getGraphNodeCoord(n2);
-
-            noFill();
-            stroke(0xffaa0000);
-            strokeWeight(2);
-            line(p1.x, p1.y, p2.x, p2.y);
-
-            pushMatrix();
-            PVector diff = PVector.sub(p2, p1);
-            float a = atan2(diff.y, diff.x);
-            translate(p2.x, p2.y);
-            rotate(a - HALF_PI);
-
-            float s = 9;
-            float sr = 3;
-            strokeWeight(1);
-            fill(0xffaa0000);
-            triangle(-s / sr, -s, s / sr, -s, 0, 0);
-
-            popMatrix();
-        }
-        popStyle();
-    }
-
-    public void drawRoute(Route route) {
-        pushStyle();
-        ArrayList<PVector> coords = route.bake();
-
-        for (int i = 0; i < coords.size() - 1; i++) {
-            PVector p1 = coords.get(i);
-            PVector p2 = coords.get(i + 1);
-
-            noFill();
-            stroke(0xff00ff00);
-            strokeWeight(1);
-            line(p1.x, p1.y, p2.x, p2.y);
-
-            pushMatrix();
-            PVector diff = PVector.sub(p2, p1);
-            float a = atan2(diff.y, diff.x);
-            translate(p2.x, p2.y);
-            rotate(a - HALF_PI);
-
-            float s = 9;
-            float sr = 3;
-            strokeWeight(1);
-            fill(0xff00ff00);
-            triangle(-s / sr, -s, s / sr, -s, 0, 0);
-
-            popMatrix();
-        }
-        popStyle();
-    }
-
-    public void drawCurrentRoute() {
+    private void drawCurrentRoute() {
         strokeWeight(1);
         stroke(235);
         noFill();
@@ -227,16 +160,16 @@ public class App extends PApplet {
         endShape();
     }
 
-    public void selectNextGraph() {
+    private void selectNextGraph() {
         currentGraphIndex++;
         currentGraphIndex %= city.graphs.size();
     }
 
-    public void selectPrevGraph() {
+    private void selectPrevGraph() {
         if (currentGraphIndex > 0) currentGraphIndex--;
     }
 
-    public void drawTrack(Track track) {
+    private void drawTrack(Track track) {
         noFill();
         // stroke(255, 255, 0, 50);
         stroke(red(track.paint), green(track.paint), blue(track.paint), 50);
@@ -246,20 +179,20 @@ public class App extends PApplet {
         endShape();
     }
 
-    public void drawCityAgents(City city, boolean drawVehicle, boolean drawTrack) {
+    private void drawCityAgents(City city, boolean drawVehicle, boolean drawTrack) {
         for (Vehicle a : city.vehicles) {
             if (drawVehicle) drawVehicle(a);
             if (drawTrack) drawTrack(a.track);
         }
     }
 
-    public void drawVehicle(Vehicle v) {
+    private void drawVehicle(Vehicle v) {
         stroke(v.paint);
         strokeWeight(v.size);
         point(v.location.x, v.location.y);
     }
 
-    public void drawRoads(CityGraph cg, Road selected) {
+    private void drawRoads(CityGraph cg, Road selected) {
         pushStyle();
         noFill();
         for (Road road : cg.roads) {
@@ -279,8 +212,6 @@ public class App extends PApplet {
     }
 
     public void keyPressed() {
-        // float step = map(camera.zoom, 0, 1, 100, 10);
-        // float step = .01 / camera.getZoom();
         float step = .0025f;
         if (keyCode == UP) camera.moveTarget(step, 0);
         if (keyCode == DOWN) camera.moveTarget(-step, 0);
@@ -310,11 +241,11 @@ public class App extends PApplet {
 //        if (key == '8') drawNearest = !drawNearest;
     }
 
-    public void drawCityRoads(City city, Road selected) {
+    private void drawCityRoads(City city, Road selected) {
         for (CityGraph cg : city.graphs) drawRoads(cg, selected);
     }
 
-    public void bakeGraph() {
+    private void bakeGraph() {
         String dump = GraphUtils.bake(city.graphs.get(currentGraphIndex).graph);
         println(dump);
     }
