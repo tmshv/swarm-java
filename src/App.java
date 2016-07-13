@@ -41,8 +41,7 @@ public class App extends PApplet {
     public void setup() {
         background(0);
 
-        projector = new SphericalMercator();
-        projector.scale = .5f;
+        projector = new SphericalMercator(0.5d);
 
         camera = new Camera(projector);
 

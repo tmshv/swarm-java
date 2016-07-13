@@ -15,15 +15,14 @@ import static processing.core.PConstants.PI;
  */
 
 public class SphericalMercator implements IProjector {
-    private float R = 6378137;
-    private Transform t;
+    private double R = 6378137;
+    private Transform transform;
 
-    public float scale = 1;
+    public double scale = 1;
 
-    public SphericalMercator() {
-        //float s = 0.5 / (PI * this.R);
-        //this.t = new Transform(s, 0.5, -s, 0.5);
-        this.t = new Transform(1, 0, -1, 0);
+    public SphericalMercator(double scale) {
+        this.scale = scale;
+        this.transform = new Transform(1, 0, -1, 0);
     }
 
     public PVector project(LatLon latlon) {
@@ -33,24 +32,23 @@ public class SphericalMercator implements IProjector {
         float lat = max(min(MAX_LATITUDE, latlon.lat), -MAX_LATITUDE);
         float sin = sin(lat * d);
 
-        return t.transform(new PVector(
-                this.R * latlon.lon * d,
-                this.R * log((1 + sin) / (1 - sin)) / 2
+        return transform.transform(new PVector(
+                (float) this.R * latlon.lon * d,
+                (float) this.R * log((1 + sin) / (1 - sin)) / 2
         ), this.scale);
     }
 
     public LatLon unproject(PVector point) {
         float d = 180 / PI;
 
-        point = t.untransform(point.copy(), this.scale);
-        return new LatLon(
-                (2 * atan(exp(point.y / this.R)) - (PI / 2)) * d,
-                point.x * d / this.R
-        );
+        point = transform.untransform(point.copy(), this.scale);
+        float lat = (2 * atan(exp(point.y / (float) this.R)) - (PI / 2)) * d;
+        float lon = (float) (point.x * d / this.R);
+        return new LatLon(lat, lon);
     }
 
     public PVector[] bounds() {
-        float d = this.R * PI;
+        float d = (float) (this.R * PI);
         PVector[] b = new PVector[2];
         b[0] = new PVector(-d, -d);
         b[1] = new PVector(d, d);
@@ -62,6 +60,6 @@ public class SphericalMercator implements IProjector {
     }
 
     public float getScale() {
-        return this.scale;
+        return (float) this.scale;
     }
 }
