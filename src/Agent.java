@@ -17,6 +17,8 @@ public class Agent {
     int paint;
     int size = 5;
 
+    boolean moving = true;
+
     public Agent(float maxForce, float maxSpeed, int agentColor) {
         this.maxForce = maxForce;
         this.maxSpeed = maxSpeed;

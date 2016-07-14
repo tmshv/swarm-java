@@ -23,9 +23,10 @@ public class City {
         Iterator<Agent> i = this.agents.iterator();
         while (i.hasNext()) {
             Agent v = i.next();
-            // v.update();
             v.run();
-//            if (!v.moving) i.remove();
+            if (!v.moving){
+//                i.remove();
+            }
         }
     }
 

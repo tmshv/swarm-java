@@ -8,7 +8,7 @@ import processing.core.PVector;
  *
  * @author tmshv
  */
-public  class Driver {
+public  class Navigator {
     public City city;
     public int algorithm = 2;
     public int graphIndex = 0;
@@ -19,7 +19,7 @@ public  class Driver {
 
     IProjector proj;
 
-    public Driver(City city, int algorhitm, IProjector proj) {
+    public Navigator(City city, int algorhitm, IProjector proj) {
         this.city = city;
         this.proj = proj;
         this.algorithm = algorithm;

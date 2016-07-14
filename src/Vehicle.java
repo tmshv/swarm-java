@@ -13,8 +13,6 @@ import static java.lang.Math.min;
 public class Vehicle extends Agent{
     float r;
 
-    boolean moving = true;
-
     public float goalDistance = 5;
 
     PVector finishPoint;

@@ -17,7 +17,7 @@ public class App extends PApplet {
     private Crossroad crossroadStart = null;
     private Crossroad crossroadFinish = null;
 
-    private Driver defaultDriver;
+    private Navigator navigator;
 
     private boolean drawRoads = true;
     private boolean drawAgents = true;
@@ -64,14 +64,14 @@ public class App extends PApplet {
         setStartPoint(new LatLon(55.73898f, 37.605858f));
         setEndPoint(new LatLon(55.743206f, 37.607254f));
 
-        defaultDriver = new Driver(city, 2, projector);
-        Route r = defaultDriver.navigate(crossroadStart, crossroadFinish);
+        navigator = new Navigator(city, 2, projector);
+        Route r = navigator.navigate(crossroadStart, crossroadFinish);
         if (r != null) currentRoute = r.bake();
 
         emitAgent();
     }
 
-    private Driver createAgent() {
+    private Vehicle createVehicle(String type) {
         float maxSpeed = random(1, 10);
         float maxForce = random(1, 4);
 
@@ -88,9 +88,7 @@ public class App extends PApplet {
         v.dirMult = dirMult;
         city.addAgent(v);
 
-        Driver driver = new Driver(city, 2, projector);
-        driver.drive(v);
-        return driver;
+        return v;
     }
 
     public void draw() {
@@ -102,7 +100,7 @@ public class App extends PApplet {
             if (mouseButton == RIGHT) setEndPoint(mouse);
 
             if (crossroadStart != null && crossroadFinish != null) {
-                Route r = defaultDriver.navigate(crossroadStart, crossroadFinish);
+                Route r = navigator.navigate(crossroadStart, crossroadFinish);
                 if (r != null) currentRoute = r.bake();
             }
         }
@@ -147,9 +145,9 @@ public class App extends PApplet {
     }
 
     private void emitAgent() {
-        Driver d = createAgent();
-        Route r = d.navigate(crossroadStart, crossroadFinish);
-        d.driveWith(r);
+        Vehicle a = (Vehicle) createVehicle("");
+        Route r = navigator.navigate(crossroadStart, crossroadFinish);
+        a.move(r);
     }
 
     private void drawCurrentRoute() {
