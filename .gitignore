@@ -1,3 +1,5 @@
 .idea/
 *.geojson
 bin/
+*.csv
+.DS_Store
