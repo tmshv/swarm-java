@@ -86,7 +86,7 @@ public class App extends PApplet {
         v.size = size;
         v.predictMult = predictMult;
         v.dirMult = dirMult;
-        city.addVehicle(v);
+        city.addAgent(v);
 
         Driver driver = new Driver(city, 2, projector);
         driver.drive(v);
@@ -109,6 +109,8 @@ public class App extends PApplet {
 
         pushMatrix();
         camera.update(this);
+        rotateX(HALF_PI/2);
+
         city.update();
 
         if (currentRoute != null) {
@@ -180,13 +182,13 @@ public class App extends PApplet {
     }
 
     private void drawCityAgents(City city, boolean drawVehicle, boolean drawTrack) {
-        for (Vehicle a : city.vehicles) {
-            if (drawVehicle) drawVehicle(a);
+        for (Agent a : city.agents) {
+            if (drawVehicle) drawAgent(a);
             if (drawTrack) drawTrack(a.track);
         }
     }
 
-    private void drawVehicle(Vehicle v) {
+    private void drawAgent(Agent v) {
         stroke(v.paint);
         strokeWeight(v.size);
         point(v.location.x, v.location.y);

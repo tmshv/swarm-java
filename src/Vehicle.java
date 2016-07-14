@@ -10,20 +10,14 @@ import static java.lang.Math.min;
  *
  * @author tmshv
  */
-public class Vehicle {
+public class Vehicle extends Agent{
     float r;
-    public float maxForce;    // Maximum steering force
-    public float maxSpeed;    // Maximum speed
 
     boolean moving = true;
 
     public float goalDistance = 5;
 
     PVector finishPoint;
-
-    public PVector location = new PVector();
-    public PVector velocity = new PVector();
-    public PVector acceleration = new PVector();
 
     public PVector predictLocation = new PVector();
     public PVector normalLocation = new PVector();
@@ -34,18 +28,11 @@ public class Vehicle {
 
     private ArrayList<PVector> route;
 
-    int paint;
-    int size = 5;
-    Track track;
-
     public Vehicle(float speed, float force, int c) {
-        this.maxSpeed = speed;
-        this.maxForce = force;
-
-        paint = c;
-        track = new Track(c);
+        super(speed, force, c);
     }
 
+    @Override
     public void run() {
         if (finishPoint != null && (location.dist(finishPoint) < goalDistance)) {
             finishPoint = null;
@@ -60,44 +47,6 @@ public class Vehicle {
         this.route = route.bake();
         finishPoint = this.route.get(this.route.size() - 1);
         this.location.set(this.route.get(0));
-    }
-
-    // A method that calculates and applies a steering force towards a target
-    // STEER = DESIRED MINUS VELOCITY
-    public void seek(PVector target) {
-        PVector desired = PVector.sub(target, location);
-
-        // If the magnitude of desired equals 0, skip out of here
-        // (We could optimize this to check if x and y are 0 to avoid mag() square root
-        if (desired.mag() == 0) return;
-
-        // Normalize desired and scale to maximum speed
-        desired.normalize();
-        desired.mult(maxSpeed);
-
-        // Steering = Desired minus Velocity
-        PVector steer = PVector.sub(desired, velocity);
-        steer.limit(maxForce);  // Limit to maximum steering force
-
-        applyForce(steer);
-    }
-
-    // Method to update location
-    public void update() {
-        // println("velocity: "+velocity);
-
-        // Update velocity
-        velocity.add(acceleration);
-        // Limit speed
-        velocity.limit(maxSpeed);
-        location.add(velocity);
-        // Reset accelertion to 0 each cycle
-        acceleration.mult(0);
-    }
-
-    public void applyForce(PVector force) {
-        // We could add mass here if we want A = F / M
-        acceleration.add(force);
     }
 
     // This function implements Craig Reynolds' path following algorithm
@@ -128,7 +77,8 @@ public class Vehicle {
             PVector b = route.get(i + 1);
 
             // Get the normal point to that line
-            normalPoint = getNormalPoint(predictLocation, a, b);
+//            normalPoint = getNormalPoint(predictLocation, a, b);
+            normalPoint = GeometryUtils.projectVertexOnLine(predictLocation, a, b);
 
             // Check if normal is on line segment
             PVector dir = PVector.sub(b, a);

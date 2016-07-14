@@ -10,22 +10,22 @@ import java.util.Iterator;
  */
 public class City {
     public ArrayList<CityGraph> graphs;
-    public ArrayList<Vehicle> vehicles;
+    public ArrayList<Agent> agents;
 
     int trafficLimit = 1000;
 
     City() {
         graphs = new ArrayList<CityGraph>();
-        vehicles = new ArrayList<Vehicle>();
+        agents = new ArrayList<Agent>();
     }
 
     public void update() {
-        Iterator<Vehicle> i = this.vehicles.iterator();
+        Iterator<Agent> i = this.agents.iterator();
         while (i.hasNext()) {
-            Vehicle v = i.next();
+            Agent v = i.next();
             // v.update();
             v.run();
-            if (!v.moving) i.remove();
+//            if (!v.moving) i.remove();
         }
     }
 
@@ -37,8 +37,8 @@ public class City {
         graphs.add(g);
     }
 
-    public void addVehicle(Vehicle v) {
-        vehicles.add(v);
+    public void addAgent(Agent v) {
+        agents.add(v);
     }
 
     public LatLon getCenter() {
