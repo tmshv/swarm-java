@@ -14,20 +14,21 @@ public class Agent {
     public float maxSpeed;    // Maximum speed
 
     Track track;
-    int paint;
+    int color;
     int size = 5;
 
     boolean moving = true;
 
-    public Agent(float maxForce, float maxSpeed, int agentColor) {
+    public Agent(float maxForce, float maxSpeed, int color) {
         this.maxForce = maxForce;
         this.maxSpeed = maxSpeed;
-        this.paint = agentColor;
-        this.track = new Track(agentColor);
+        this.color = color;
+        this.track = new Track(color);
     }
 
     public void run() {
         update();
+        track.write(this.location.copy());
     }
 
     // A method that calculates and applies a steering force towards a target

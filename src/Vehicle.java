@@ -37,7 +37,6 @@ public class Vehicle extends Agent{
         } else {
             follow();
             update();
-            track.write(this.location.copy());
         }
     }
 

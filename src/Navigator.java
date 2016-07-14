@@ -9,7 +9,7 @@ import processing.core.PVector;
  * @author tmshv
  */
 public  class Navigator {
-    public City city;
+    public Simulation simulation;
     public int algorithm = 2;
     public int graphIndex = 0;
 
@@ -19,8 +19,8 @@ public  class Navigator {
 
     IProjector proj;
 
-    public Navigator(City city, int algorhitm, IProjector proj) {
-        this.city = city;
+    public Navigator(Simulation simulation, int algorhitm, IProjector proj) {
+        this.simulation = simulation;
         this.proj = proj;
         this.algorithm = algorithm;
     }
@@ -32,15 +32,15 @@ public  class Navigator {
     public Route navigate(LatLon from, LatLon to) {
         PVector fromV = proj.project(from);
         PVector toV = proj.project(to);
-        Crossroad crFrom = this.city.graph(graphIndex).findNearestCrossroadTo(fromV);
-        Crossroad crTo = this.city.graph(graphIndex).findNearestCrossroadTo(toV);
+        Crossroad crFrom = this.simulation.graph(graphIndex).findNearestCrossroadTo(fromV);
+        Crossroad crTo = this.simulation.graph(graphIndex).findNearestCrossroadTo(toV);
 
         return navigate(crFrom, crTo);
     }
 
     public Route navigate(Crossroad from, Crossroad to) {
-        int start = this.city.graph(graphIndex).getCrossroadIndex(from);
-        int finish = this.city.graph(graphIndex).getCrossroadIndex(to);
+        int start = this.simulation.graph(graphIndex).getCrossroadIndex(from);
+        int finish = this.simulation.graph(graphIndex).getCrossroadIndex(to);
 
         return navigate(start, finish); //<>//
     }
@@ -49,7 +49,7 @@ public  class Navigator {
         GraphNode[] graphRoute = findRoute(from, to);
         if (graphRoute.length == 0) return null;
 
-        Route route = new Route(city.graph(graphIndex), graphRoute);
+        Route route = new Route(simulation.graph(graphIndex), graphRoute);
         return route;
     }
 
@@ -60,7 +60,7 @@ public  class Navigator {
     }
 
     public GraphNode[] findRoute(int from, int to) {
-        IGraphSearch finder = makePathFinder(this.city.graph(graphIndex).graph, this.algorithm);
+        IGraphSearch finder = makePathFinder(this.simulation.graph(graphIndex).graph, this.algorithm);
         finder.search(from, to);
         return finder.getRoute();
     }

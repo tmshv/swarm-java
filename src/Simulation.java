@@ -8,13 +8,13 @@ import java.util.Iterator;
  *
  * @author tmshv
  */
-public class City {
+public class Simulation {
     public ArrayList<CityGraph> graphs;
     public ArrayList<Agent> agents;
 
     int trafficLimit = 1000;
 
-    City() {
+    Simulation() {
         graphs = new ArrayList<CityGraph>();
         agents = new ArrayList<Agent>();
     }
@@ -34,7 +34,7 @@ public class City {
         return graphs.get(i);
     }
 
-    public void addCityGraph(CityGraph g) {
+    public void addGraphLayer(CityGraph g) {
         graphs.add(g);
     }
 

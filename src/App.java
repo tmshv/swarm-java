@@ -28,7 +28,7 @@ public class App extends PApplet {
 
     private ArrayList<PVector> currentRoute;
 
-    private City city;
+    private Simulation simulation;
     private Camera camera;
     private SphericalMercator projector;
 
@@ -42,21 +42,19 @@ public class App extends PApplet {
 
         projector = new SphericalMercator(0.5d);
         camera = new Camera(projector);
+        simulation = new Simulation();
+        navigator = new Navigator(simulation, 2, projector);
 
-        IFeatureCollection geo;
-
-        geo = new GeoJSON(loadJSONObject("sample_roads-EPSG4326.geojson"));
+        IFeatureCollection geo = new GeoJSON(loadJSONObject("sample_roads-EPSG4326.geojson"));
         FeatureExploder fx = new FeatureExploder(geo);
         CityGraph streets = new CityGraph(fx, projector);
         streets.strokeColor = 0xffdddddd;
+        simulation.addGraphLayer(streets);
 
         // geo = new GeoJSON("../osm_sample.geojson");
         // FeatureExploder fx = new FeatureExploder(geo);
         // FeatureOptimizer fo = new FeatureOptimizer(fx);
         // CityGraph streets = new CityGraph(fo);
-
-        city = new City();
-        city.addCityGraph(streets);
 
         camera.setOffset(new PVector(width / 2, height / 2));
         camera.lookAt(new LatLon(55.73898f, 37.605858f));
@@ -64,11 +62,15 @@ public class App extends PApplet {
         setStartPoint(new LatLon(55.73898f, 37.605858f));
         setEndPoint(new LatLon(55.743206f, 37.607254f));
 
-        navigator = new Navigator(city, 2, projector);
         Route r = navigator.navigate(crossroadStart, crossroadFinish);
         if (r != null) currentRoute = r.bake();
 
         emitAgent();
+        createRandomWalker(new LatLon(55.73898f, 37.605858f));
+        createRandomWalker(new LatLon(55.73898f, 37.605858f));
+        createRandomWalker(new LatLon(55.73898f, 37.605858f));
+        createRandomWalker(new LatLon(55.73898f, 37.605858f));
+        createRandomWalker(new LatLon(55.73898f, 37.605858f));
     }
 
     private Vehicle createVehicle(String type) {
@@ -86,9 +88,27 @@ public class App extends PApplet {
         v.size = size;
         v.predictMult = predictMult;
         v.dirMult = dirMult;
-        city.addAgent(v);
+        simulation.addAgent(v);
 
         return v;
+    }
+
+    private RandomWalker createRandomWalker(LatLon loc) {
+        float maxSpeed = random(1, 10);
+        float maxForce = random(1, 4);
+
+        int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
+        int color = colors[(int) (random(colors.length - 1))];
+        int size = (int) random(2, 5);
+
+        float predictMult = random(10, 50);
+        float dirMult = random(2, 10);
+
+        RandomWalker a = new RandomWalker(maxSpeed, maxForce, color);
+        a.location.set(projector.project(loc));
+        a.size = size;
+        simulation.addAgent(a);
+        return a;
     }
 
     public void draw() {
@@ -107,16 +127,16 @@ public class App extends PApplet {
 
         pushMatrix();
         camera.update(this);
-        rotateX(HALF_PI/2);
+        rotateX(HALF_PI / 2);
 
-        city.update();
+        simulation.update();
 
         if (currentRoute != null) {
             drawCurrentRoute();
         }
 
-        if (drawRoads) drawCityRoads(city, null);
-        drawCityAgents(city, drawAgents, drawTracks);
+        if (drawRoads) drawCityRoads(simulation, null);
+        drawCityAgents(simulation, drawAgents, drawTracks);
 
         // if(crossroadStart != null && crossroadFinish != null){
         //   noFill();
@@ -136,12 +156,12 @@ public class App extends PApplet {
 
     private void setStartPoint(LatLon ll) {
         PVector v = projector.project(ll);
-        crossroadStart = city.graph(currentGraphIndex).findNearestCrossroadTo(v);
+        crossroadStart = simulation.graph(currentGraphIndex).findNearestCrossroadTo(v);
     }
 
     private void setEndPoint(LatLon ll) {
         PVector v = projector.project(ll);
-        crossroadFinish = city.graph(currentGraphIndex).findNearestCrossroadTo(v);
+        crossroadFinish = simulation.graph(currentGraphIndex).findNearestCrossroadTo(v);
     }
 
     private void emitAgent() {
@@ -162,7 +182,7 @@ public class App extends PApplet {
 
     private void selectNextGraph() {
         currentGraphIndex++;
-        currentGraphIndex %= city.graphs.size();
+        currentGraphIndex %= simulation.graphs.size();
     }
 
     private void selectPrevGraph() {
@@ -179,15 +199,15 @@ public class App extends PApplet {
         endShape();
     }
 
-    private void drawCityAgents(City city, boolean drawVehicle, boolean drawTrack) {
-        for (Agent a : city.agents) {
+    private void drawCityAgents(Simulation simulation, boolean drawVehicle, boolean drawTrack) {
+        for (Agent a : simulation.agents) {
             if (drawVehicle) drawAgent(a);
             if (drawTrack) drawTrack(a.track);
         }
     }
 
     private void drawAgent(Agent v) {
-        stroke(v.paint);
+        stroke(v.color);
         strokeWeight(v.size);
         point(v.location.x, v.location.y);
     }
@@ -241,12 +261,12 @@ public class App extends PApplet {
 //        if (key == '8') drawNearest = !drawNearest;
     }
 
-    private void drawCityRoads(City city, Road selected) {
-        for (CityGraph cg : city.graphs) drawRoads(cg, selected);
+    private void drawCityRoads(Simulation simulation, Road selected) {
+        for (CityGraph cg : simulation.graphs) drawRoads(cg, selected);
     }
 
     private void bakeGraph() {
-        String dump = GraphUtils.bake(city.graphs.get(currentGraphIndex).graph);
+        String dump = GraphUtils.bake(simulation.graphs.get(currentGraphIndex).graph);
         println(dump);
     }
 }
