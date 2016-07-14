@@ -16,9 +16,13 @@ public class RandomWalker extends Agent {
 
     @Override
     public void run() {
+        applyRandom();
+        super.run();
+    }
+
+    private void applyRandom() {
         float angle = (float) (random.nextDouble() * Math.PI * 2);
         PVector direction = PVector.fromAngle(angle);
         applyForce(direction);
-        super.run();
     }
 }

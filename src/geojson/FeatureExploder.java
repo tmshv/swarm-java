@@ -40,7 +40,8 @@ public class FeatureExploder implements IFeatureCollection {
             ArrayList<LatLon> coords = new ArrayList<LatLon>();
             coords.add(source.coords.get(i));
             coords.add(source.coords.get(i + 1));
-            Geometry g = new Geometry(coords);
+            Geometry g = new Geometry();
+            g.coords = coords;
             Feature f = new Feature(g);
             result.add(f);
 

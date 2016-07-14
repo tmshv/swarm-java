@@ -85,8 +85,8 @@ public class Vehicle extends Agent{
             if (normalPoint.x < min(a.x, b.x) || normalPoint.x > max(a.x, b.x) || normalPoint.y < min(a.y, b.y) || normalPoint.y > max(a.y, b.y)) {
                 normalPoint = b.copy();
                 // If we're at the end we really want the next line segment for looking ahead
-                // a = p.points.get((i+1)%p.points.size());
-                // b = p.points.get((i+2)%p.points.size());  // Path wraps around
+                // a = p.points.get((i+1)%p.points.mass());
+                // b = p.points.get((i+2)%p.points.mass());  // Path wraps around
                 // dir = PVector.sub(b, a);
             }
 

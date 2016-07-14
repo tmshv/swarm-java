@@ -4,6 +4,7 @@ import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Created at 14/07/16
@@ -15,22 +16,22 @@ public class Geometry {
 
     public ArrayList<LatLon> coords;
 
-    public Geometry(ArrayList<LatLon> coords) {
-        this.coords = coords;
-        ;
-        this.type = "Polygon";
+    Geometry() {
+
     }
 
     public Geometry(JSONObject geometry) {
-        this(new ArrayList<LatLon>());
         this.type = geometry.getString("type");
+        this.coords = new ArrayList<LatLon>();
 
-        JSONArray geo_coords = geometry.getJSONArray("coordinates");
-        for (int i = 0; i < geo_coords.size(); i++) {
-            JSONArray g = geo_coords.getJSONArray(i);
-            float lat = g.getFloat(1);
-            float lon = g.getFloat(0);
-            this.coords.add(new LatLon(lat, lon));
+        switch (this.type){
+            case "LineString":
+                this.loadLineString(geometry);
+                break;
+
+            case "Point":
+                this.loadPoint(geometry);
+                break;
         }
     }
 
@@ -51,10 +52,26 @@ public class Geometry {
     }
 
     public Geometry clone() {
-        ArrayList<LatLon> cs = new ArrayList<LatLon>();
-        for (LatLon c : coords) {
-            cs.add(c.clone());
+        Geometry g = new Geometry();
+        g.type = this.type;
+        g.coords = coords.stream().map(LatLon::clone).collect(Collectors.toCollection(ArrayList::new));
+        return g;
+    }
+
+    private void loadLineString(JSONObject geometry){
+        JSONArray cs = geometry.getJSONArray("coordinates");
+        for (int i = 0; i < cs.size(); i++) {
+            JSONArray g = cs.getJSONArray(i);
+            float lat = g.getFloat(1);
+            float lon = g.getFloat(0);
+            this.coords.add(new LatLon(lat, lon));
         }
-        return new Geometry(cs);
+    }
+
+    private void loadPoint(JSONObject geometry){
+        JSONArray cs = geometry.getJSONArray("coordinates");
+        float lat = cs.getFloat(1);
+        float lon = cs.getFloat(0);
+        this.coords.add(new LatLon(lat, lon));
     }
 }

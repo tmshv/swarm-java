@@ -11,27 +11,54 @@ import java.util.Iterator;
 public class Simulation {
     public ArrayList<CityGraph> graphs;
     public ArrayList<Agent> agents;
+    public ArrayList<Attractor> attractors;
 
-    int trafficLimit = 1000;
+    private ArrayList<Track> tracks;
 
     Simulation() {
-        graphs = new ArrayList<CityGraph>();
-        agents = new ArrayList<Agent>();
-    }
-
-    public void update() {
-        Iterator<Agent> i = this.agents.iterator();
-        while (i.hasNext()) {
-            Agent v = i.next();
-            v.run();
-            if (!v.moving){
-//                i.remove();
-            }
-        }
+        graphs = new ArrayList<>();
+        agents = new ArrayList<>();
+        attractors = new ArrayList<>();
+        tracks = new ArrayList<>();
     }
 
     public CityGraph graph(int i) {
         return graphs.get(i);
+    }
+
+    public void update() {
+//        interactAgents();
+
+        Iterator<Agent> i = this.agents.iterator();
+        while (i.hasNext()) {
+            Agent agent = i.next();
+            interactAttractors(agent);
+
+            agent.run();
+            if (!agent.moving) {
+                this.saveTrack(agent);
+                i.remove();
+            }
+        }
+    }
+
+    private void interactAgents() {
+        for (Agent a : this.agents) {
+            this.agents
+                    .stream()
+                    .filter(b -> a != b)
+                    .forEach(a::interact);
+        }
+    }
+
+    private void interactAttractors(Agent agent) {
+        this.attractors
+                .stream()
+                .forEach(agent::interact);
+    }
+
+    private void saveTrack(Agent agent) {
+        this.tracks.add(agent.track);
     }
 
     public void addGraphLayer(CityGraph g) {
@@ -40,6 +67,10 @@ public class Simulation {
 
     public void addAgent(Agent v) {
         agents.add(v);
+    }
+
+    public void addAttractor(Attractor a) {
+        attractors.add(a);
     }
 
     public LatLon getCenter() {

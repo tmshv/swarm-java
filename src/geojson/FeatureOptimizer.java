@@ -149,6 +149,9 @@ public class FeatureOptimizer implements IFeatureCollection {
         newPath.addAll(f2.geometry.getInnerCoords());
         newPath.add(f2.geometry.last());
 
-        return new Feature(new Geometry(newPath));
+        Geometry g = new Geometry();
+        g.type = "LineString";
+        g.coords = newPath;
+        return new Feature(g);
     }
 }

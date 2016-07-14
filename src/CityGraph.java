@@ -110,7 +110,7 @@ public class CityGraph {
     //     noStroke();
     //     fill(255, 30);
 
-    //     float s = map(cr.roads.size(), 0, 10, 10, 30);
+    //     float s = map(cr.roads.mass(), 0, 10, 10, 30);
     //     PVector p = projector.project(cr.coord);
     //     ellipse(p.x, p.y, s, s);
     //   }

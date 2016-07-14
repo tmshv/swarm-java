@@ -1,8 +1,10 @@
 import geojson.*;
 import processing.core.PApplet;
 import processing.core.PVector;
+import processing.data.Table;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class App extends PApplet {
     static public void main(String[] passedArgs) {
@@ -22,7 +24,8 @@ public class App extends PApplet {
     private boolean drawRoads = true;
     private boolean drawAgents = true;
     private boolean drawTracks = true;
-    private boolean drawGraphMode = true;
+    private boolean drawAttractors = true;
+    private boolean drawTweets = false;
 
     private int currentGraphIndex = 0;
 
@@ -45,11 +48,16 @@ public class App extends PApplet {
         simulation = new Simulation();
         navigator = new Navigator(simulation, 2, projector);
 
-        IFeatureCollection geo = new GeoJSON(loadJSONObject("sample_roads-EPSG4326.geojson"));
+//        IFeatureCollection geo = new GeoJSON(loadJSONObject("sample_roads-EPSG4326.geojson"));
+        IFeatureCollection geo = new GeoJSON(loadJSONObject("road2.geojson"));
         FeatureExploder fx = new FeatureExploder(geo);
         CityGraph streets = new CityGraph(fx, projector);
         streets.strokeColor = 0xffdddddd;
         simulation.addGraphLayer(streets);
+
+        loadAttractors(new GeoJSON(loadJSONObject("trees.geojson")), "tree", 10, 0xff00ff00);
+//        loadTweets(loadTable("runner3.csv", "header"), 0xff0022aa);
+//        loadTweets(loadTable("tourist-pedestrian.csv", "header"), 0xff0022aa);
 
         // geo = new GeoJSON("../osm_sample.geojson");
         // FeatureExploder fx = new FeatureExploder(geo);
@@ -65,12 +73,53 @@ public class App extends PApplet {
         Route r = navigator.navigate(crossroadStart, crossroadFinish);
         if (r != null) currentRoute = r.bake();
 
-        emitAgent();
+//        emitAgent();
         createRandomWalker(new LatLon(55.73898f, 37.605858f));
         createRandomWalker(new LatLon(55.73898f, 37.605858f));
         createRandomWalker(new LatLon(55.73898f, 37.605858f));
         createRandomWalker(new LatLon(55.73898f, 37.605858f));
         createRandomWalker(new LatLon(55.73898f, 37.605858f));
+
+//        simulation.addAttractor(new Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
+    }
+
+    private void loadAttractors(GeoJSON fc, String type, float mass, int color) {
+        ArrayList<Feature> features = fc.getFeatures();
+        features.stream()
+                .filter(feature -> Objects.equals(feature.geometry.type, "Point"))
+                .forEach(feature -> {
+                    LatLon ll = feature.geometry.coords.get(0);
+                    PVector p = projector.project(ll);
+                    Attractor a = new Attractor(type, mass, p);
+                    a.setColor(color);
+                    simulation.addAttractor(a);
+                });
+    }
+
+    private void loadTweets(Table table, int color) {
+        table.rows().forEach(row -> {
+            float lat = row.getFloat("lat");
+            float lon = row.getFloat("lon");
+            int followers = row.getInt("followers");
+
+            followers *= 100;
+
+            PVector loc = projector.project(new LatLon(lat, lon));
+            Tweet a = new Tweet(loc, row.getString("tweet"), row.getString("username"), followers);
+            a.setColor(color);
+            simulation.addAttractor(a);
+        });
+
+//        ArrayList<Feature> features = fc.getFeatures();
+//        features.stream()
+//                .filter(feature -> Objects.equals(feature.geometry.type, "Point"))
+//                .forEach(feature -> {
+//                    LatLon ll = feature.geometry.coords.get(0);
+//                    PVector p = projector.project(ll);
+//                    Attractor a = new Attractor(type, mass, p);
+//                    a.setColor(color);
+//                    simulation.addAttractor(a);
+//                });
     }
 
     private Vehicle createVehicle(String type) {
@@ -85,7 +134,7 @@ public class App extends PApplet {
         float dirMult = random(2, 10);
 
         Vehicle v = new Vehicle(maxSpeed, maxForce, c);
-        v.size = size;
+        v.mass = size;
         v.predictMult = predictMult;
         v.dirMult = dirMult;
         simulation.addAgent(v);
@@ -106,7 +155,7 @@ public class App extends PApplet {
 
         RandomWalker a = new RandomWalker(maxSpeed, maxForce, color);
         a.location.set(projector.project(loc));
-        a.size = size;
+        a.mass = size;
         simulation.addAgent(a);
         return a;
     }
@@ -127,16 +176,17 @@ public class App extends PApplet {
 
         pushMatrix();
         camera.update(this);
-        rotateX(HALF_PI / 2);
+//        rotateX(HALF_PI / 2);
 
         simulation.update();
 
-        if (currentRoute != null) {
-            drawCurrentRoute();
-        }
-
+        if (currentRoute != null) drawCurrentRoute();
         if (drawRoads) drawCityRoads(simulation, null);
-        drawCityAgents(simulation, drawAgents, drawTracks);
+        drawCityAgents(drawAgents, drawTracks);
+        if (drawAttractors) simulation.attractors.forEach(a -> {
+            if (a instanceof Tweet) drawTweet((Tweet) a);
+            else drawAttractor(a);
+        });
 
         // if(crossroadStart != null && crossroadFinish != null){
         //   noFill();
@@ -146,7 +196,6 @@ public class App extends PApplet {
         //   PVector c;
         //   c = projector.project(crossroadStart.coord);
         //   ellipse(c.x, c.y, 5, 5);
-
         //   c = projector.project(crossroadFinish.coord);
         //   ellipse(c.x, c.y, 10, 10);
         // }
@@ -199,17 +248,38 @@ public class App extends PApplet {
         endShape();
     }
 
-    private void drawCityAgents(Simulation simulation, boolean drawVehicle, boolean drawTrack) {
-        for (Agent a : simulation.agents) {
-            if (drawVehicle) drawAgent(a);
-            if (drawTrack) drawTrack(a.track);
-        }
+    private void drawCityAgents(boolean drawVehicle, boolean drawTrack) {
+        simulation.agents
+                .stream()
+                .forEach(a -> {
+                    if (drawVehicle) drawAgent(a);
+                    if (drawTrack) drawTrack(a.track);
+                });
     }
 
-    private void drawAgent(Agent v) {
-        stroke(v.color);
-        strokeWeight(v.size);
-        point(v.location.x, v.location.y);
+    private void drawAgent(Agent agent) {
+        stroke(agent.color);
+        strokeWeight(agent.mass);
+        point(agent.location.x, agent.location.y);
+    }
+
+    private void drawAttractor(Attractor attractor) {
+        int w = 2;//map(attractor.getMass(), 0, 1, 0, 10)
+        PVector loc = attractor.getLocation();
+        stroke(attractor.getColor());
+        strokeWeight(w);
+        point(loc.x, loc.y);
+    }
+
+    private void drawTweet(Tweet tweet) {
+        int w = 2;
+        PVector loc = tweet.getLocation();
+        stroke(tweet.getColor());
+        strokeWeight(w);
+        point(loc.x, loc.y);
+
+        String text = tweet.username;
+        if (drawTweets) text(text, loc.x, loc.y);
     }
 
     private void drawRoads(CityGraph cg, Road selected) {
@@ -244,8 +314,6 @@ public class App extends PApplet {
         if (key == ' ') saveFrame("../frame-###.jpg");
 
         if (key == 'g') bakeGraph();
-        if (key == 'r') drawGraphMode = !drawGraphMode;
-
         if (key == 'e') emitAgent();
 
         if (key == ']') selectNextGraph();
@@ -254,7 +322,9 @@ public class App extends PApplet {
         if (key == '1') drawRoads = !drawRoads;
         if (key == '2') drawAgents = !drawAgents;
         if (key == '3') drawTracks = !drawTracks;
-//        if (key == '4') drawNodes = !drawNodes;
+        if (key == '4') drawAttractors = !drawAttractors;
+        if (key == '5') drawTweets = !drawTweets;
+
 //        if (key == '5') drawEdges = !drawEdges;
 //        if (key == '6') drawGraphRoute = !drawGraphRoute;
 //        if (key == '7') drawRoute = !drawRoute;

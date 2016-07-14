@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author tmshv
  */
-public     class GeoJSON implements IFeatureCollection {
+public class GeoJSON implements IFeatureCollection {
     ArrayList<Feature> features = new ArrayList<Feature>();
 
     public GeoJSON(JSONObject json) {
