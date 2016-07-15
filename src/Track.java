@@ -10,10 +10,10 @@ import java.util.ArrayList;
 public class Track {
     ArrayList<PVector> history = new ArrayList<PVector>();
 
-    int paint;
+    int color;
 
     Track(int c) {
-        paint = c;
+        color = c;
     }
 
     public PVector last() {

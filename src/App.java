@@ -24,6 +24,7 @@ public class App extends PApplet {
     private boolean drawRoads = true;
     private boolean drawAgents = true;
     private boolean drawTracks = true;
+    private boolean drawHistoryTracks = true;
     private boolean drawAttractors = true;
     private boolean drawTweets = false;
 
@@ -77,17 +78,21 @@ public class App extends PApplet {
         Route r = navigator.navigate(crossroadStart, crossroadFinish);
         if (r != null) currentRoute = r.bake();
 
-        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
-        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
-        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
-        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
-        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
+        AgentFactory.init(this, projector, simulation, navigator);
 
-        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+
+        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 
 //        simulation.addAttractor(new Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
     }
@@ -120,59 +125,6 @@ public class App extends PApplet {
         });
     }
 
-    private Agent createNaturalFlowAgent(LatLon latLon) {
-        Agent a = createRandomWalker(latLon, "naturalFlow");
-        a.addInteractionType("tree");
-        a.color = 0xFFCCCCCC;
-        return a;
-    }
-
-    private Agent createBikeAgent(LatLon loc, LatLon target) {
-        Route route = navigator.navigate(loc, target);
-        if(route == null) return null;
-
-        float maxSpeed = random(5, 10);
-        float maxForce = random(3, 5);
-
-        Vehicle a = createVehicle("bike", maxSpeed, maxForce);
-        a.addInteractionType("tweet");
-        a.move(route);
-        a.color = 0xFFFFFF00;
-        return a;
-    }
-
-    private Vehicle createVehicle(String type, float maxSpeed, float maxForce) {
-        int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
-        int c = colors[(int) (random(colors.length - 1))];
-        int size = (int) random(2, 5);
-
-        float predictMult = random(10, 50);
-        float dirMult = random(2, 10);
-
-        Vehicle v = new Vehicle(type, maxSpeed, maxForce, c);
-        v.mass = size;
-        v.predictMult = predictMult;
-        v.dirMult = dirMult;
-        simulation.addAgent(v);
-
-        return v;
-    }
-
-    private RandomWalker createRandomWalker(LatLon loc, String type) {
-        float maxSpeed = random(1, 10);
-        float maxForce = random(1, 4);
-
-        int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
-        int color = colors[(int) (random(colors.length - 1))];
-        int size = (int) random(2, 5);
-
-        RandomWalker a = new RandomWalker(type, maxSpeed, maxForce, color);
-        a.location.set(projector.project(loc));
-        a.mass = size;
-        simulation.addAgent(a);
-        return a;
-    }
-
     public void draw() {
         background(0);
         LatLon mouse = getLatLonCursor();
@@ -195,6 +147,7 @@ public class App extends PApplet {
 
         if (currentRoute != null) drawCurrentRoute();
         if (drawRoads) drawCityRoads(simulation, null);
+        if(drawHistoryTracks) drawHistoryTracks();
         drawCityAgents(drawAgents, drawTracks);
         if (drawAttractors) simulation.attractors.forEach(a -> {
             if (a instanceof Tweet) drawTweet((Tweet) a);
@@ -219,6 +172,7 @@ public class App extends PApplet {
     private LatLon getLatLonCursor() {
         return camera.getCoordAtScreen(mouseX, mouseY);
     }
+
 
     private void setStartPoint(LatLon ll) {
         PVector v = projector.project(ll);
@@ -255,22 +209,28 @@ public class App extends PApplet {
         if (currentGraphIndex > 0) currentGraphIndex--;
     }
 
+    private void drawHistoryTracks() {
+        simulation.tracks.forEach(this::drawTrack);
+    }
+
     private void drawTrack(Track track) {
         noFill();
         // stroke(255, 255, 0, 50);
-        stroke(red(track.paint), green(track.paint), blue(track.paint), 50);
+        stroke(red(track.color), green(track.color), blue(track.color), 50);
         strokeWeight(1);
         beginShape();
-        for (PVector v : track.history) vertex(v.x, v.y);
+        track.history.forEach(v -> vertex(v.x, v.y));
         endShape();
     }
 
     private void drawCityAgents(boolean drawVehicle, boolean drawTrack) {
         simulation.agents
                 .stream()
+                .map(a -> (Agent) a)
+                .filter(a -> a != null)
                 .forEach(a -> {
                     if (drawVehicle) drawAgent(a);
-                    if (drawTrack) drawTrack(a.track);
+                    if (drawTrack) drawTrack(a.getTrack());
                 });
     }
 
@@ -325,9 +285,6 @@ public class App extends PApplet {
         if (keyCode == LEFT) camera.moveTarget(0, -step);
         if (keyCode == RIGHT) camera.moveTarget(0, step);
 
-        // if (key == '-') camera.zoomOut();
-        // if (key == '=') camera.zoomIn();
-        // if (key == '0') camera.lookAt(center);
         if (key == ' ') saveFrame("../frame-###.jpg");
 
         if (key == 'g') bakeGraph();
@@ -340,13 +297,9 @@ public class App extends PApplet {
         if (key == '1') drawRoads = !drawRoads;
         if (key == '2') drawAgents = !drawAgents;
         if (key == '3') drawTracks = !drawTracks;
-        if (key == '4') drawAttractors = !drawAttractors;
-        if (key == '5') drawTweets = !drawTweets;
-
-//        if (key == '5') drawEdges = !drawEdges;
-//        if (key == '6') drawGraphRoute = !drawGraphRoute;
-//        if (key == '7') drawRoute = !drawRoute;
-//        if (key == '8') drawNearest = !drawNearest;
+        if (key == '4') drawHistoryTracks = !drawHistoryTracks;
+        if (key == '5') drawAttractors = !drawAttractors;
+        if (key == '6') drawTweets = !drawTweets;
     }
 
     private void drawCityRoads(Simulation simulation, Road selected) {

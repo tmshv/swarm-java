@@ -10,10 +10,10 @@ import java.util.Iterator;
  */
 public class Simulation {
     public ArrayList<CityGraph> graphs;
-    public ArrayList<Agent> agents;
+    public ArrayList<IAgent> agents;
     public ArrayList<Attractor> attractors;
 
-    private ArrayList<Track> tracks;
+    ArrayList<Track> tracks;
 
     Simulation() {
         graphs = new ArrayList<>();
@@ -29,21 +29,23 @@ public class Simulation {
     public void update() {
 //        interactAgents();
 
-        Iterator<Agent> i = this.agents.iterator();
+        Iterator<IAgent> i = this.agents.iterator();
         while (i.hasNext()) {
-            Agent agent = i.next();
-            interactAttractors(agent);
+            IAgent agent = i.next();
+            if (agent instanceof Agent) {
+                interactAttractors((Agent) agent);
+            }
 
             agent.run();
-            if (!agent.moving) {
-                this.saveTrack(agent);
+            if (!agent.isMoving()) {
+                saveTrack(agent.getTrack());
                 i.remove();
             }
         }
     }
 
     private void interactAgents() {
-        for (Agent a : this.agents) {
+        for (IAgent a : this.agents) {
             this.agents
                     .stream()
                     .filter(b -> a != b)
@@ -57,8 +59,8 @@ public class Simulation {
                 .forEach(agent::interact);
     }
 
-    private void saveTrack(Agent agent) {
-        this.tracks.add(agent.track);
+    private void saveTrack(Track track) {
+        this.tracks.add(track);
     }
 
     public void addGraphLayer(CityGraph g) {

@@ -8,26 +8,30 @@ import java.util.HashMap;
  *
  * @author tmshv
  */
-public class Agent implements IInterest {
+public class Agent implements IInterest, IAgent {
+    static int defaultLifetime = 300;
+
     PVector location = new PVector();
+
     protected PVector velocity = new PVector();
     protected PVector acceleration = new PVector();
 
     public float maxForce;    // Maximum steering force
     public float maxSpeed;    // Maximum speed
+
     public float interestDistance = 50;
     public float interestThreshold = 0.001f;
     public float interestMultiplier = 0.9f;
 
-    HashMap<IInterest, Float> interestValues;
+    public int color;
+    public int mass = 5;
 
-    Track track;
-    int color;
-    int mass = 5;
-
-    boolean moving = true;
-    ArrayList<String> interactTypes;
-    String type;
+    private HashMap<IInterest, Float> interestValues;
+    private Track track;
+    private ArrayList<String> interactTypes;
+    private String type;
+    private boolean moving;
+    private int lifetime;
 
     public Agent(String type, float maxForce, float maxSpeed, int color) {
         this.type = type;
@@ -37,18 +41,52 @@ public class Agent implements IInterest {
         this.track = new Track(color);
         interestValues = new HashMap<>();
         interactTypes = new ArrayList<>();
+        lifetime = Agent.defaultLifetime;
+        moving = true;
     }
 
-    public float getInteractionPower(Agent other) {
+    public void run() {
+        if (moving) {
+            update();
+            track.write(this.location.copy());
+
+            lifetime--;
+            if (lifetime == 0) {
+                moving = false;
+            }
+        }
+    }
+
+    @Override
+    public Track getTrack() {
+        return track;
+    }
+
+    @Override
+    public PVector getLocation() {
+        return this.location;
+    }
+
+    @Override
+    public int getLifetime() {
+        return lifetime;
+    }
+
+    @Override
+    public void setLifetime(int value) {
+        lifetime = value;
+    }
+
+    public float getInteractionPower(IAgent other) {
         return 10;
     }
 
-    public void interact(Agent other) {
+    public void interact(IAgent other) {
         if (!interactTypes.contains(other.getType())) return;
 
         float power = getInteractionPower(other);
         if (power != 0) {
-            PVector v = getSteeringDirection(other.location);
+            PVector v = getSteeringDirection(other.getLocation());
             v.normalize();
             v.mult(power);
             applyForce(v);
@@ -69,9 +107,9 @@ public class Agent implements IInterest {
         }
     }
 
-    public void run() {
-        update();
-        track.write(this.location.copy());
+    @Override
+    public boolean isMoving() {
+        return this.moving;
     }
 
     void seek(PVector target) {
@@ -140,7 +178,7 @@ public class Agent implements IInterest {
         if (interestValues.containsKey(other)) {
             v = interestValues.get(other);
             v *= interestMultiplier;
-            if(v < interestThreshold) v = 0;
+            if (v < interestThreshold) v = 0;
         }
         interestValues.put(other, v);
         return v;
