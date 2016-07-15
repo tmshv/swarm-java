@@ -26,8 +26,8 @@ public class Vehicle extends Agent{
 
     private ArrayList<PVector> route;
 
-    public Vehicle(float speed, float force, int c) {
-        super(speed, force, c);
+    public Vehicle(String type, float speed, float force, int c) {
+        super(type, speed, force, c);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class Vehicle extends Agent{
             finishPoint = null;
         } else {
             follow();
-            update();
+            super.run();
         }
     }
 
@@ -49,6 +49,8 @@ public class Vehicle extends Agent{
     // This function implements Craig Reynolds' path following algorithm
     // http://www.red3d.com/cwr/steer/PathFollow.html
     public void follow() {
+        if(route == null) return;
+
         float roadRadius = 5;
 
         // Predict location 50 (arbitrary choice) frames ahead

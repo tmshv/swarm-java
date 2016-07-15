@@ -1,5 +1,6 @@
 import processing.core.PVector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -25,13 +26,17 @@ public class Agent implements IInterest {
     int mass = 5;
 
     boolean moving = true;
+    ArrayList<String> interactTypes;
+    String type;
 
-    public Agent(float maxForce, float maxSpeed, int color) {
+    public Agent(String type, float maxForce, float maxSpeed, int color) {
+        this.type = type;
         this.maxForce = maxForce;
         this.maxSpeed = maxSpeed;
         this.color = color;
         this.track = new Track(color);
         interestValues = new HashMap<>();
+        interactTypes = new ArrayList<>();
     }
 
     public float getInteractionPower(Agent other) {
@@ -39,6 +44,8 @@ public class Agent implements IInterest {
     }
 
     public void interact(Agent other) {
+        if (!interactTypes.contains(other.getType())) return;
+
         float power = getInteractionPower(other);
         if (power != 0) {
             PVector v = getSteeringDirection(other.location);
@@ -49,17 +56,12 @@ public class Agent implements IInterest {
     }
 
     public void interact(Attractor attractor) {
-//        float g = 1;
-
-        PVector v = PVector.sub(location, attractor.getLocation());
-        float r2 = v.magSq();
-        float force = getInterestValueFor(attractor);
-//        float force = g * (mass * agent.mass) / r2;
-
-//        System.out.println(force);
+        if (!interactTypes.contains(attractor.getType())) return;
 
         float dist = PVector.dist(location, attractor.getLocation());
         if (dist < interestDistance) {
+            float force = getInterestValueFor(attractor);
+
             PVector dir = getSteeringDirection(attractor.getLocation());
             dir.normalize();
             dir.mult(force);
@@ -76,7 +78,6 @@ public class Agent implements IInterest {
         PVector steer = getSteeringDirection(target);
         applyForce(steer);
     }
-
 
     /**
      * A method that calculates and applies a steering force towards a target
@@ -103,6 +104,7 @@ public class Agent implements IInterest {
         return steer;
     }
 
+
     /**
      * Method to update location
      */
@@ -123,6 +125,10 @@ public class Agent implements IInterest {
         acceleration.add(force);
     }
 
+    public String getType() {
+        return type;
+    }
+
     @Override
     public float getValue() {
         return mass;
@@ -138,5 +144,9 @@ public class Agent implements IInterest {
         }
         interestValues.put(other, v);
         return v;
+    }
+
+    public void addInteractionType(String type) {
+        interactTypes.add(type);
     }
 }

@@ -56,8 +56,8 @@ public class App extends PApplet {
         simulation.addGraphLayer(streets);
 
         loadAttractors(new GeoJSON(loadJSONObject("trees.geojson")), "tree", 10, 0xff00ff00);
-//        loadTweets(loadTable("runner3.csv", "header"), 0xff0022aa);
-//        loadTweets(loadTable("tourist-pedestrian.csv", "header"), 0xff0022aa);
+        loadTweets(loadTable("runner3.csv", "header"), 0xff0022aa);
+        loadTweets(loadTable("tourist-pedestrian.csv", "header"), 0xff0022aa);
 
         // geo = new GeoJSON("../osm_sample.geojson");
         // FeatureExploder fx = new FeatureExploder(geo);
@@ -65,20 +65,29 @@ public class App extends PApplet {
         // CityGraph streets = new CityGraph(fo);
 
         camera.setOffset(new PVector(width / 2, height / 2));
-        camera.lookAt(new LatLon(55.73898f, 37.605858f));
+        camera.lookAt(new LatLon(55.74433f, 37.615776f));
 
         setStartPoint(new LatLon(55.73898f, 37.605858f));
         setEndPoint(new LatLon(55.743206f, 37.607254f));
 
+        setStartPoint(new LatLon(55.73898f, 37.605858f));
+        setEndPoint(new LatLon(55.739960443216781f, 37.617145380088019f));
+//        emitAgent();
+
         Route r = navigator.navigate(crossroadStart, crossroadFinish);
         if (r != null) currentRoute = r.bake();
 
-//        emitAgent();
-        createRandomWalker(new LatLon(55.73898f, 37.605858f));
-        createRandomWalker(new LatLon(55.73898f, 37.605858f));
-        createRandomWalker(new LatLon(55.73898f, 37.605858f));
-        createRandomWalker(new LatLon(55.73898f, 37.605858f));
-        createRandomWalker(new LatLon(55.73898f, 37.605858f));
+        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
+        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
+        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
+        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
+        createNaturalFlowAgent(new LatLon(55.74433f, 37.615776f));
+
+        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
 
 //        simulation.addAttractor(new Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
     }
@@ -109,23 +118,30 @@ public class App extends PApplet {
             a.setColor(color);
             simulation.addAttractor(a);
         });
-
-//        ArrayList<Feature> features = fc.getFeatures();
-//        features.stream()
-//                .filter(feature -> Objects.equals(feature.geometry.type, "Point"))
-//                .forEach(feature -> {
-//                    LatLon ll = feature.geometry.coords.get(0);
-//                    PVector p = projector.project(ll);
-//                    Attractor a = new Attractor(type, mass, p);
-//                    a.setColor(color);
-//                    simulation.addAttractor(a);
-//                });
     }
 
-    private Vehicle createVehicle(String type) {
-        float maxSpeed = random(1, 10);
-        float maxForce = random(1, 4);
+    private Agent createNaturalFlowAgent(LatLon latLon) {
+        Agent a = createRandomWalker(latLon, "naturalFlow");
+        a.addInteractionType("tree");
+        a.color = 0xFFCCCCCC;
+        return a;
+    }
 
+    private Agent createBikeAgent(LatLon loc, LatLon target) {
+        Route route = navigator.navigate(loc, target);
+        if(route == null) return null;
+
+        float maxSpeed = random(5, 10);
+        float maxForce = random(3, 5);
+
+        Vehicle a = createVehicle("bike", maxSpeed, maxForce);
+        a.addInteractionType("tweet");
+        a.move(route);
+        a.color = 0xFFFFFF00;
+        return a;
+    }
+
+    private Vehicle createVehicle(String type, float maxSpeed, float maxForce) {
         int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
         int c = colors[(int) (random(colors.length - 1))];
         int size = (int) random(2, 5);
@@ -133,7 +149,7 @@ public class App extends PApplet {
         float predictMult = random(10, 50);
         float dirMult = random(2, 10);
 
-        Vehicle v = new Vehicle(maxSpeed, maxForce, c);
+        Vehicle v = new Vehicle(type, maxSpeed, maxForce, c);
         v.mass = size;
         v.predictMult = predictMult;
         v.dirMult = dirMult;
@@ -142,7 +158,7 @@ public class App extends PApplet {
         return v;
     }
 
-    private RandomWalker createRandomWalker(LatLon loc) {
+    private RandomWalker createRandomWalker(LatLon loc, String type) {
         float maxSpeed = random(1, 10);
         float maxForce = random(1, 4);
 
@@ -150,10 +166,7 @@ public class App extends PApplet {
         int color = colors[(int) (random(colors.length - 1))];
         int size = (int) random(2, 5);
 
-        float predictMult = random(10, 50);
-        float dirMult = random(2, 10);
-
-        RandomWalker a = new RandomWalker(maxSpeed, maxForce, color);
+        RandomWalker a = new RandomWalker(type, maxSpeed, maxForce, color);
         a.location.set(projector.project(loc));
         a.mass = size;
         simulation.addAgent(a);
@@ -162,7 +175,7 @@ public class App extends PApplet {
 
     public void draw() {
         background(0);
-        LatLon mouse = camera.getCoordAtScreen(mouseX, mouseY);
+        LatLon mouse = getLatLonCursor();
 
         if (mousePressed) {
             if (mouseButton == LEFT) setStartPoint(mouse);
@@ -203,6 +216,10 @@ public class App extends PApplet {
         popMatrix();
     }
 
+    private LatLon getLatLonCursor() {
+        return camera.getCoordAtScreen(mouseX, mouseY);
+    }
+
     private void setStartPoint(LatLon ll) {
         PVector v = projector.project(ll);
         crossroadStart = simulation.graph(currentGraphIndex).findNearestCrossroadTo(v);
@@ -214,9 +231,9 @@ public class App extends PApplet {
     }
 
     private void emitAgent() {
-        Vehicle a = (Vehicle) createVehicle("");
-        Route r = navigator.navigate(crossroadStart, crossroadFinish);
-        a.move(r);
+//        Vehicle a = createVehicle("");
+//        Route r = navigator.navigate(crossroadStart, crossroadFinish);
+//        a.move(r);
     }
 
     private void drawCurrentRoute() {
@@ -315,6 +332,7 @@ public class App extends PApplet {
 
         if (key == 'g') bakeGraph();
         if (key == 'e') emitAgent();
+        if (key == 'm') println(getLatLonCursor());
 
         if (key == ']') selectNextGraph();
         if (key == '[') selectPrevGraph();

@@ -10,8 +10,8 @@ import java.util.Random;
 public class RandomWalker extends Agent {
     private Random random = new Random();
 
-    public RandomWalker(float maxForce, float maxSpeed, int agentColor) {
-        super(maxForce, maxSpeed, agentColor);
+    public RandomWalker(String type, float maxForce, float maxSpeed, int agentColor) {
+        super(type, maxForce, maxSpeed, agentColor);
     }
 
     @Override
