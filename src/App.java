@@ -27,7 +27,7 @@ public class App extends PApplet {
     private boolean drawHistoryTracks = true;
     private boolean drawAttractors = true;
     private boolean drawTweets = false;
-
+    private float cameraStep = .00125f;
     private int currentGraphIndex = 0;
 
     private ArrayList<PVector> currentRoute;
@@ -44,26 +44,17 @@ public class App extends PApplet {
     public void setup() {
         background(0);
 
-        projector = new SphericalMercator(0.5d);
+        projector = new SphericalMercator(0.80d);
         camera = new Camera(projector);
         simulation = new Simulation();
         navigator = new Navigator(simulation, 2, projector);
 
-//        IFeatureCollection geo = new GeoJSON(loadJSONObject("sample_roads-EPSG4326.geojson"));
-        IFeatureCollection geo = new GeoJSON(loadJSONObject("road2.geojson"));
-        FeatureExploder fx = new FeatureExploder(geo);
-        CityGraph streets = new CityGraph(fx, projector);
-        streets.strokeColor = 0xffdddddd;
-        simulation.addGraphLayer(streets);
+        loadRoadLayer("road-transport.geojson", 0xffdddddd);
+        loadRoadLayer("road-pedestrian.geojson", 0xff444444);
 
         loadAttractors(new GeoJSON(loadJSONObject("trees.geojson")), "tree", 10, 0xff00ff00);
         loadTweets(loadTable("runner3.csv", "header"), 0xff0022aa);
         loadTweets(loadTable("tourist-pedestrian.csv", "header"), 0xff0022aa);
-
-        // geo = new GeoJSON("../osm_sample.geojson");
-        // FeatureExploder fx = new FeatureExploder(geo);
-        // FeatureOptimizer fo = new FeatureOptimizer(fx);
-        // CityGraph streets = new CityGraph(fo);
 
         camera.setOffset(new PVector(width / 2, height / 2));
         camera.lookAt(new LatLon(55.74433f, 37.615776f));
@@ -80,21 +71,29 @@ public class App extends PApplet {
 
         AgentFactory.init(this, projector, simulation, navigator);
 
-//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+
+        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
 
         AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 
 //        simulation.addAttractor(new Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
+    }
+
+    private void loadRoadLayer(String filename, int color) {
+        IFeatureCollection geo = new GeoJSON(loadJSONObject(filename));
+        FeatureExploder fx = new FeatureExploder(geo);
+        CityGraph streets = new CityGraph(fx, projector);
+        streets.strokeColor = color;
+        simulation.addGraphLayer(streets);
     }
 
     private void loadAttractors(GeoJSON fc, String type, float mass, int color) {
@@ -279,11 +278,10 @@ public class App extends PApplet {
     }
 
     public void keyPressed() {
-        float step = .0025f;
-        if (keyCode == UP) camera.moveTarget(step, 0);
-        if (keyCode == DOWN) camera.moveTarget(-step, 0);
-        if (keyCode == LEFT) camera.moveTarget(0, -step);
-        if (keyCode == RIGHT) camera.moveTarget(0, step);
+        if (keyCode == UP) camera.moveTarget(cameraStep, 0);
+        if (keyCode == DOWN) camera.moveTarget(-cameraStep, 0);
+        if (keyCode == LEFT) camera.moveTarget(0, -cameraStep);
+        if (keyCode == RIGHT) camera.moveTarget(0, cameraStep);
 
         if (key == ' ') saveFrame("../frame-###.jpg");
 
