@@ -24,7 +24,7 @@ public class Agent implements IInterest, IAgent {
     public float interestMultiplier = 0.9f;
 
     public int color;
-    public int mass = 5;
+    public float mass = 5;
 
     private HashMap<IInterest, Float> interestValues;
     private Track track;

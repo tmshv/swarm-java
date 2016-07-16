@@ -12,6 +12,7 @@ public class Simulation {
     public ArrayList<CityGraph> graphs;
     public ArrayList<IAgent> agents;
     public ArrayList<Attractor> attractors;
+    public ArrayList<Emitter> emitters;
 
     ArrayList<Track> tracks;
 
@@ -19,6 +20,7 @@ public class Simulation {
         graphs = new ArrayList<>();
         agents = new ArrayList<>();
         attractors = new ArrayList<>();
+        emitters = new ArrayList<>();
         tracks = new ArrayList<>();
     }
 
@@ -42,6 +44,8 @@ public class Simulation {
                 i.remove();
             }
         }
+
+        emitters.forEach(Emitter::run);
     }
 
     private void interactAgents() {
@@ -90,5 +94,9 @@ public class Simulation {
         c.lat /= graphs.size();
         c.lon /= graphs.size();
         return c;
+    }
+
+    public void addEmitter(Emitter emitter) {
+        emitters.add(emitter);
     }
 }

@@ -16,10 +16,13 @@ public class UI {
     float rotationZ;
     float positionZ;
 
-    float step = 17;
+    float cursorLat;
+    float cursorLon;
 
-    int width = 300;
-    int height = 15;
+    float step = 12;
+
+    int width = 350;
+    int height = 10;
 
     private PVector pos;
 
@@ -31,6 +34,10 @@ public class UI {
         addSlider("rotation", 0, 0, (float) Math.PI);
         addSlider("rotationZ", 0, 0, (float) (Math.PI * 2));
         addSlider("positionZ", 0, -1000, 1000);
+
+        addSpace();
+        addSlider("cursorLat", 0, -0.01f, 0.01f);
+        addSlider("cursorLon", 0, -0.01f, 0.01f);
 //        addSlider("pc-scale", 0, 0, 1);
     }
 
@@ -38,6 +45,8 @@ public class UI {
         rotation = getFloat("rotation");
         rotationZ = getFloat("rotationZ");
         positionZ = getFloat("positionZ");
+        cursorLat = getFloat("cursorLat");
+        cursorLon = getFloat("cursorLon");
 //        pointCloudScale = getFloat("pc-scale");
     }
 
@@ -45,7 +54,7 @@ public class UI {
         ui.draw();
     }
 
-    private void addSlider(String name, float value, float from, float to){
+    private void addSlider(String name, float value, float from, float to) {
         ui
                 .addSlider(name)
                 .setPosition(pos.x, pos.y)
@@ -53,6 +62,10 @@ public class UI {
                 .setRange(from, to)
                 .setValue(value);
         pos.y += step;
+    }
+
+    private void addSpace() {
+        pos.y += step * .5;
     }
 
     private float getFloat(String name) {

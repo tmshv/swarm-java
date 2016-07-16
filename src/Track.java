@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author tmshv
  */
 public class Track {
-    ArrayList<PVector> history = new ArrayList<PVector>();
+    ArrayList<PVector> history = new ArrayList<>();
 
     int color;
 

@@ -40,6 +40,9 @@ public class App extends PApplet {
     private Camera camera;
     private SphericalMercator projector;
 
+    private LatLon cursorCoord;
+    private LatLon centerCoord;
+
     private ArrayList<PVector> pointCloud;
 
     public void settings() {
@@ -56,6 +59,9 @@ public class App extends PApplet {
         camera = new Camera(projector);
         simulation = new Simulation();
         navigator = new Navigator(simulation, 2, projector);
+
+        centerCoord = new LatLon(55.74317f, 37.61516f);
+        cursorCoord = new LatLon(55.74317f, 37.61516f);
 
         pointCloud = new ArrayList<>();
         loadPointCloud(loadTable("udarnik.csv", "header"));
@@ -81,22 +87,28 @@ public class App extends PApplet {
         Route r = navigator.navigate(crossroadStart, crossroadFinish);
         if (r != null) currentRoute = r.bake();
 
-        EmitterFactory.init(projector);
+        EmitterFactory.init(projector, simulation);
         AgentFactory.init(this, projector, simulation, navigator);
 
-        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//
+//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
 
-        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-
-        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
+//        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 //        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 10 * 1000);
 
         simulation.addAttractor(new Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
@@ -107,6 +119,9 @@ public class App extends PApplet {
         LatLon mouse = getLatLonCursor();
 
         ui.update();
+
+        cursorCoord.lat = centerCoord.lat + ui.cursorLat;
+        cursorCoord.lon = centerCoord.lon + ui.cursorLon;
 
         if (mousePressed) {
             if (mouseButton == LEFT) setStartPoint(mouse);
@@ -143,6 +158,14 @@ public class App extends PApplet {
             if (a instanceof Tweet) drawTweet((Tweet) a);
             else drawAttractor(a);
         });
+
+        //Draw cursor
+        pushStyle();
+        strokeWeight(5);
+        stroke(0xffff0000);
+        PVector cursor = projector.project(cursorCoord);
+        point(cursor.x, cursor.y, cursor.z);
+        popStyle();
 
         popMatrix();
         drawUI();
@@ -202,7 +225,8 @@ public class App extends PApplet {
     }
 
     private LatLon getLatLonCursor() {
-        return camera.getCoordAtScreen(mouseX, mouseY);
+        return cursorCoord;
+//        return camera.getCoordAtScreen(mouseX, mouseY);
     }
 
 
@@ -304,7 +328,8 @@ public class App extends PApplet {
         pushStyle();
         noFill();
         // stroke(255, 255, 0, 50);
-        stroke(red(track.color), green(track.color), blue(track.color), 50);
+        stroke(track.color);
+//        stroke(red(track.color), green(track.color), blue(track.color), 50);
         strokeWeight(1);
         beginShape();
         track.history.forEach(v -> vertex(v.x, v.y, v.z));

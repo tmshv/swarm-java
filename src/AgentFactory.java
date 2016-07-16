@@ -23,25 +23,36 @@ class AgentFactory {
         AgentFactory.navigator = navigator;
     }
 
-    static RandomWalker createRandomWalker(LatLon loc, String type) {
+    static RandomWalker createRandomWalker(LatLon loc, String type, float mass, int color) {
         float maxSpeed = random(1, 10);
         float maxForce = random(1, 4);
 
-        int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
-        int color = colors[(int) (random(0, colors.length - 1))];
-        int size = (int) random(2, 5);
-
         RandomWalker a = new RandomWalker(type, maxSpeed, maxForce, color);
         a.location.set(projector.project(loc));
-        a.mass = size;
+        a.mass = mass;
         simulation.addAgent(a);
         return a;
     }
 
     static Agent createFlyAgent(LatLon latLon) {
-        Agent a = createRandomWalker(latLon, "fly");
+        Agent a = createRandomWalker(latLon, "fly", 1f, 0xFFCCCCCC);
+        a.setLifetime(600);
         a.addInteractionType("tree");
-        a.color = 0xFFCCCCCC;
+        return a;
+    }
+
+    static Agent createPedestrianAgent(LatLon loc, LatLon target) {
+        Route route = navigator.navigate(loc, target);
+        if (route == null) return null;
+
+        float maxSpeed = random(1, 2);
+        float maxForce = random(1, 3);
+
+        Vehicle a = createVehicle("pedestrian", maxSpeed, maxForce);
+        a.setLifetime(1000);
+        a.addInteractionType("tweet");
+        a.move(route);
+        a.color = 0xFFFF0000;
         return a;
     }
 
@@ -49,10 +60,11 @@ class AgentFactory {
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
-        float maxSpeed = random(5, 10);
+        float maxSpeed = random(3, 5);
         float maxForce = random(3, 5);
 
         Vehicle a = createVehicle("bike", maxSpeed, maxForce);
+        a.setLifetime(1000);
         a.addInteractionType("tweet");
         a.move(route);
         a.color = 0xFFFFFF00;
@@ -91,6 +103,7 @@ class AgentFactory {
             PVector vel = PVector.fromAngle(angle);
 
             Agent a = new Agent(type, maxSpeed, maxForce, c);
+            a.setLifetime(400);
             a.mass = 2;
             a.location.set(loc);
             a.velocity.set(vel);
