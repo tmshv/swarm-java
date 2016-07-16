@@ -3,6 +3,8 @@ import geojson.LatLon;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import java.util.Arrays;
+
 import static java.lang.Math.PI;
 
 /**
@@ -15,6 +17,9 @@ class AgentFactory {
     private static IProjector projector;
     private static Simulation simulation;
     private static Navigator navigator;
+
+    static String[] defaultAttractors = new String[]{};
+    static String[] pedestrianAttractors = new String[]{"tweet"};
 
     static void init(PApplet app, IProjector projector, Simulation simulation, Navigator navigator) {
         AgentFactory.app = app;
@@ -41,46 +46,79 @@ class AgentFactory {
         return a;
     }
 
-    static Agent createPedestrianAgent(LatLon loc, LatLon target) {
+    static Agent createPedestrian(LatLon loc, LatLon target) {
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
-        float maxSpeed = random(1, 2);
-        float maxForce = random(1, 3);
+        float maxSpeed = random(.001f, .002f);
+        float maxForce = 1;//random(.001f, .002f);
+        float mass = random(2, 5);
+//        int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
+//        int c = colors[(int) (random(0, colors.length - 1))];
 
-        Vehicle a = createVehicle("pedestrian", maxSpeed, maxForce);
-        a.setLifetime(1000);
-        a.addInteractionType("tweet");
+        Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
+        a.setLifetime(3000);
+        Arrays.stream(pedestrianAttractors).forEach(a::addInteractionType);
         a.move(route);
         a.color = 0xFFFF0000;
         return a;
     }
 
-    static Agent createBikeAgent(LatLon loc, LatLon target) {
+    static Agent createRunner(LatLon loc, LatLon target) {
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
-        float maxSpeed = random(3, 5);
-        float maxForce = random(3, 5);
+        float maxSpeed = random(.002f, .003f);
+        float maxForce = 1;//random(.001f, .002f);
+        float mass = random(2, 5);
 
-        Vehicle a = createVehicle("bike", maxSpeed, maxForce);
-        a.setLifetime(1000);
+        Follower a = createFollower("runner", maxSpeed, maxForce, mass, 0xff00ff00);
+        a.setLifetime(8000);
         a.addInteractionType("tweet");
+        a.addInteractionType("tree");
         a.move(route);
-        a.color = 0xFFFFFF00;
+        a.color = 0xFFFF0000;
         return a;
     }
 
-    static Vehicle createVehicle(String type, float maxSpeed, float maxForce) {
-        int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
-        int c = colors[(int) (random(0, colors.length - 1))];
-        int size = (int) random(2, 5);
+    static Agent createBike(LatLon loc, LatLon target) {
+        Route route = navigator.navigate(loc, target);
+        if (route == null) return null;
 
+        float maxSpeed = random(.003f, .006f);
+        float maxForce = 1;//random(.003f, .006f);
+        float mass = random(2, 5);
+
+        Follower a = createFollower("bike", maxSpeed, maxForce, mass, 0xffffff00);
+        a.setLifetime(3000);
+        a.addInteractionType("tweet");
+        a.move(route);
+        a.color = 0xffffff00;
+        return a;
+    }
+
+    static Agent createTransport(LatLon loc, LatLon target) {
+        Route route = navigator.navigate(loc, target);
+        if (route == null) return null;
+
+        float maxSpeed = random(.01f, .02f);
+        float maxForce = 1;//random(.003f, .006f);
+        float mass = random(2, 5);
+
+        Follower a = createFollower("bike", maxSpeed, maxForce, mass, 0xff00ffff);
+        a.setLifetime(5000);
+//        a.addInteractionType("tweet");
+        a.move(route);
+        a.color = 0xffffff00;
+        return a;
+    }
+
+    static Follower createFollower(String type, float maxSpeed, float maxForce, float mass, int color) {
         float predictMult = random(10, 50);
         float dirMult = random(2, 10);
 
-        Vehicle v = new Vehicle(type, maxSpeed, maxForce, c);
-        v.mass = size;
+        Follower v = new Follower(type, maxSpeed, maxForce, color);
+        v.mass = mass;
         v.predictMult = predictMult;
         v.dirMult = dirMult;
         simulation.addAgent(v);

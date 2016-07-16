@@ -1,7 +1,7 @@
 import geojson.LatLon;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created at 14/07/16
@@ -67,8 +67,8 @@ public class Simulation {
         this.tracks.add(track);
     }
 
-    public void addGraphLayer(CityGraph g) {
-        graphs.add(g);
+    public void addGraphLayer(CityGraph graph) {
+        graphs.add(graph);
     }
 
     public void addAgent(Agent v) {
@@ -81,9 +81,7 @@ public class Simulation {
 
     public LatLon getCenter() {
         LatLon[] list = new LatLon[graphs.size()];
-        for (int i = 0; i < graphs.size(); i++) {
-            list[i] = graphs.get(i).getCenter();
-        }
+        for (int i = 0; i < graphs.size(); i++) list[i] = graphs.get(i).getCenter();
 
         LatLon c = new LatLon();
         for (LatLon ll : list) {
@@ -96,7 +94,23 @@ public class Simulation {
         return c;
     }
 
+    public ArrayList<Attractor> getAttractorsByType(String[] type) {
+        if (type.length == 0) return attractors;
+
+        return (ArrayList<Attractor>) attractors
+                .stream()
+                .filter(a -> Arrays.asList(type).contains(a.getType()))
+                .collect(Collectors.toList());
+    }
+
     public void addEmitter(Emitter emitter) {
         emitters.add(emitter);
+    }
+
+    public Attractor getRandomAttractor(String[] type) {
+        Random r = new Random();
+        ArrayList<Attractor> as = getAttractorsByType(type);
+        int index = r.nextInt(as.size());
+        return as.get(index);
     }
 }

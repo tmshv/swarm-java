@@ -21,7 +21,67 @@ public class EmitterFactory {
         Emitter e = new Emitter(type, v, i) {
             @Override
             void update() {
-                AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
+                AgentFactory.createBoids(loc, "bird", 30);
+            }
+        };
+        simulation.addEmitter(e);
+    }
+
+    public static void createPedestrian(LatLon loc, int i) {
+        PVector v = projector.project(loc);
+        Emitter e = new Emitter("pedestrian", v, i) {
+            @Override
+            void update() {
+                Attractor target = simulation.getRandomAttractor(AgentFactory.pedestrianAttractors);
+                if (target != null) {
+                    LatLon t = projector.unproject(target.getLocation());
+                    AgentFactory.createPedestrian(loc, t);
+                }
+            }
+        };
+        simulation.addEmitter(e);
+    }
+
+    public static void createRunner(LatLon loc, int i) {
+        PVector v = projector.project(loc);
+        Emitter e = new Emitter("runner", v, i) {
+            @Override
+            void update() {
+                Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
+                if (target != null) {
+                    LatLon t = projector.unproject(target.getLocation());
+                    AgentFactory.createRunner(loc, t);
+                }
+            }
+        };
+        simulation.addEmitter(e);
+    }
+
+    public static void createBike(LatLon loc, int i) {
+        PVector v = projector.project(loc);
+        Emitter e = new Emitter("bike", v, i) {
+            @Override
+            void update() {
+                Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
+                if (target != null) {
+                    LatLon t = projector.unproject(target.getLocation());
+                    AgentFactory.createRunner(loc, t);
+                }
+            }
+        };
+        simulation.addEmitter(e);
+    }
+
+    public static void createTransport(LatLon loc, int i) {
+        PVector v = projector.project(loc);
+        Emitter e = new Emitter("transport", v, i) {
+            @Override
+            void update() {
+                Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
+                if (target != null) {
+                    LatLon t = projector.unproject(target.getLocation());
+                    AgentFactory.createRunner(loc, t);
+                }
             }
         };
         simulation.addEmitter(e);

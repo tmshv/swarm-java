@@ -12,7 +12,7 @@ public class Path {
     public ArrayList<PVector> coords;
 
     public Path() {
-        this(new ArrayList<PVector>());
+        this(new ArrayList<>());
     }
 
     public Path(ArrayList<PVector> cs) {
@@ -24,7 +24,7 @@ public class Path {
     }
 
     public ArrayList<PVector> getInnerCoords() {
-        ArrayList<PVector> c = new ArrayList<PVector>();
+        ArrayList<PVector> c = new ArrayList<>();
         for (int i = 1; i < coords.size() - 1; i++) {
             c.add(coords.get(i));
         }

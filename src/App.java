@@ -1,11 +1,14 @@
 import geojson.*;
 import processing.core.PApplet;
+import processing.core.PGraphics;
+import processing.core.PImage;
 import processing.core.PVector;
 import processing.data.Table;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Objects;
+
+import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
 
 public class App extends PApplet {
     static public void main(String[] passedArgs) {
@@ -41,9 +44,13 @@ public class App extends PApplet {
     private SphericalMercator projector;
 
     private LatLon cursorCoord;
+    private PVector cursor;
     private LatLon centerCoord;
 
     private ArrayList<PVector> pointCloud;
+
+    private PGraphics bakedRoads;
+    private PImage img;
 
     public void settings() {
         fullScreen(P3D);
@@ -51,8 +58,6 @@ public class App extends PApplet {
     }
 
     public void setup() {
-        background(0);
-
         ui = new UI(this, 10, 10);
 
         projector = new SphericalMercator(0.80d);
@@ -60,80 +65,98 @@ public class App extends PApplet {
         simulation = new Simulation();
         navigator = new Navigator(simulation, 2, projector);
 
-        centerCoord = new LatLon(55.74317f, 37.61516f);
-        cursorCoord = new LatLon(55.74317f, 37.61516f);
-
-        pointCloud = new ArrayList<>();
-        loadPointCloud(loadTable("udarnik.csv", "header"));
-
-        loadRoadLayer("road-transport.geojson", 0xffdddddd);
-        loadRoadLayer("road-pedestrian.geojson", 0xff444444);
-
-        loadAttractors(new GeoJSON(loadJSONObject("trees.geojson")), "tree", 10, 0xff00ff00);
-        loadTweets(loadTable("runner3.csv", "header"), 0xff0022aa);
-        loadTweets(loadTable("tourist-pedestrian.csv", "header"), 0xff0022aa);
-
-//        int cameraZ = -500;
-//        camera.setOffset(new PVector(width / 2, height / 2, cameraZ));
-        camera.lookAt(new LatLon(55.74433f, 37.615776f));
-        camera.lookAt(new LatLon(55.74317f, 37.61516f));
-
-        setStartPoint(new LatLon(55.73898f, 37.605858f));
-        setEndPoint(new LatLon(55.743206f, 37.607254f));
-
-        setStartPoint(new LatLon(55.73898f, 37.605858f));
-        setEndPoint(new LatLon(55.739960443216781f, 37.617145380088019f));
-
-        Route r = navigator.navigate(crossroadStart, crossroadFinish);
-        if (r != null) currentRoute = r.bake();
-
         EmitterFactory.init(projector, simulation);
         AgentFactory.init(this, projector, simulation, navigator);
 
+        centerCoord = new LatLon(55.74317f, 37.61516f);
+        cursorCoord = new LatLon(55.74317f, 37.61516f);
+        cursor = new PVector();
+
+        pointCloud = new ArrayList<>();
+        loadPointCloud(loadTable("data/udarnik-10p.csv", "header"));
+
+//        loadRoadLayer("road-transport.geojson", 0xff000000);
+        loadRoadLayer("data/geo/road-pedestrian.geojson", 0xff444444);
+
+//        loadAttractors(new GeoJSON(loadJSONObject("trees.geojson")), "tree", 10, 0xff00ff00);
+        loadTweets(0xff3344ff, loadTable("data/tweets/pedestrian1.csv", "header"));
+        loadTweets(0xff3344ff, loadTable("data/tweets/pedestrian2.csv", "header"));
+        loadTweets(0xff3344ff, loadTable("data/tweets/runner.csv", "header"));
+        loadTweets(0xff3344ff, loadTable("data/tweets/runner2.csv", "header"));
+        loadTweets(0xff3344ff, loadTable("data/tweets/runner3.csv", "header"));
+        loadTweets(0xff3344ff, loadTable("data/tweets/tourist-pedestrian.csv", "header"));
+        loadTweets(0xff3344ff, loadTable("data/tweets/tourist1.csv", "header"));
+        loadTweets(0xff3344ff, loadTable("data/tweets/tourist2.csv", "header"));
+
+        loadData(loadTable("data/ae-temp.csv", "header"));
+
+//        int cameraZ = -500;
+//        camera.setOffset(new PVector(width / 2, height / 2, cameraZ));
+        camera.lookAt(centerCoord);
+
+        bakedRoads = renderRoads(simulation.graph(0));
+
+//        println(bakedRoads.width);
+//        println(bakedRoads.height);
+
+//        setStartPoint(new LatLon(55.73898f, 37.605858f));
+//        setEndPoint(new LatLon(55.739960443216781f, 37.617145380088019f));
+
+//        Route r = navigator.navigate(crossroadStart, crossroadFinish);
+//        if (r != null) currentRoute = r.bake();
+
 //        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
 //        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
 //        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
 //        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
 //        AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
 //
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createBikeAgent(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//
-//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        AgentFactory.createPedestrianAgent(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+
+//        AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
 
 //        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 //        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 10 * 1000);
+//        EmitterFactory.createBike(new LatLon(55.746178f, 37.615578f), 10 * 1000);
 
-        simulation.addAttractor(new Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
+//        EmitterFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), 10 * 1000);
+
+//        simulation.addAttractor(new Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
+
+//        AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createPedestrian(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        AgentFactory.createTransport(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
     }
 
     public void draw() {
-        background(0);
+        background(255);
         LatLon mouse = getLatLonCursor();
 
         ui.update();
 
         cursorCoord.lat = centerCoord.lat + ui.cursorLat;
         cursorCoord.lon = centerCoord.lon + ui.cursorLon;
+        cursor = projector.project(cursorCoord);
+        cursor.z = ui.cursorHeight;
 
-        if (mousePressed) {
-            if (mouseButton == LEFT) setStartPoint(mouse);
-            if (mouseButton == RIGHT) setEndPoint(mouse);
+//        if (mousePressed) {
+//            if (mouseButton == LEFT) setStartPoint(mouse);
+//            if (mouseButton == RIGHT) setEndPoint(mouse);
+//
+//            if (crossroadStart != null && crossroadFinish != null) {
+//                Route r = navigator.navigate(crossroadStart, crossroadFinish);
+//                if (r != null) currentRoute = r.bake();
+//            }
+//        }
 
-            if (crossroadStart != null && crossroadFinish != null) {
-                Route r = navigator.navigate(crossroadStart, crossroadFinish);
-                if (r != null) currentRoute = r.bake();
-            }
-        }
-
-        float rx = map(mouseY, 0, height, 0, HALF_PI);
+//        float rx = map(mouseY, 0, height, 0, HALF_PI);
         pushMatrix();
 //        camera(mouseX, height/2, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
 //        scale(ui.scale);
@@ -145,13 +168,14 @@ public class App extends PApplet {
 
         simulation.update();
 
-        if(drawPointCloud) {
-            PVector pcloc = projector.project(new LatLon(55.74317f, 37.61516f));
-            drawPointCloud(ui.pointCloudScale, pcloc);
+        if (drawPointCloud) drawPointCloud(ui.pointCloudScale, cursor);
+
+        if (drawRoads) {
+            image(bakedRoads, cursor.x, cursor.y);
         }
 
         if (currentRoute != null) drawCurrentRoute();
-        if (drawRoads) drawCityRoads(simulation);
+//        if (drawRoads) simulation.graphs.forEach(this::drawGraph);
         if (drawHistoryTracks) drawHistoryTracks();
         drawCityAgents(drawAgents, drawTracks);
         if (drawAttractors) simulation.attractors.forEach(a -> {
@@ -161,14 +185,20 @@ public class App extends PApplet {
 
         //Draw cursor
         pushStyle();
-        strokeWeight(5);
+        strokeWeight(1);
         stroke(0xffff0000);
-        PVector cursor = projector.project(cursorCoord);
-        point(cursor.x, cursor.y, cursor.z);
+        cross(10, cursor.x, cursor.y, cursor.z);
         popStyle();
 
         popMatrix();
         drawUI();
+
+//        image(bakedRoads, 0, 0, 500, 500);
+    }
+
+    private void cross(int i, float x, float y, float z) {
+        line(x - i, y, z, x + i, y, z);
+        line(x, y - i, z, x, y + i, z);
     }
 
     void drawUI() {
@@ -179,12 +209,43 @@ public class App extends PApplet {
         hint(ENABLE_DEPTH_TEST);
     }
 
+    private void loadData(Table table) {
+        int m = 1000;
+
+        table.rows().forEach(row -> {
+            float lat = row.getFloat("lat");
+            float lon = row.getFloat("lon");
+            int runner = row.getInt("runner");
+            int pedestrian = row.getInt("pedestrian");
+            int bike = row.getInt("bike");
+            int transport = row.getInt("transport");
+            String type = row.getString("type");
+
+            float attractionMass = 100;
+            int i = 0xffffff00;
+            LatLon coord = new LatLon(lat, lon);
+            PVector loc = projector.project(coord);
+
+            Attractor a = new Attractor(type, attractionMass, loc);
+            a.setColor(i);
+            simulation.addAttractor(a);
+
+            int period;
+            period = min(10000, pedestrian * m);
+            EmitterFactory.createPedestrian(coord, period);
+//            EmitterFactory.createRunner(coord, (int) (runner * m));
+//            EmitterFactory.createBike(coord, (int) (bike * m));
+//            EmitterFactory.createTransport(coord, (int) (transport * m));
+        });
+    }
+
     private void loadRoadLayer(String filename, int color) {
         IFeatureCollection geo = new GeoJSON(loadJSONObject(filename));
         FeatureExploder fx = new FeatureExploder(geo);
-        CityGraph streets = new CityGraph(fx, projector);
-        streets.strokeColor = color;
-        simulation.addGraphLayer(streets);
+        CityGraph graph = new CityGraph(fx, projector);
+        graph.strokeColor = color;
+        graph.strokeThickness = 1;
+        simulation.addGraphLayer(graph);
     }
 
     private void loadAttractors(GeoJSON fc, String type, float mass, int color) {
@@ -200,13 +261,13 @@ public class App extends PApplet {
                 });
     }
 
-    private void loadTweets(Table table, int color) {
+    private void loadTweets(int color, Table table) {
         table.rows().forEach(row -> {
             float lat = row.getFloat("lat");
             float lon = row.getFloat("lon");
             int followers = row.getInt("followers");
 
-            followers *= 100;
+//            followers *= 100;
 
             PVector loc = projector.project(new LatLon(lat, lon));
             Tweet a = new Tweet(loc, row.getString("tweet"), row.getString("username"), followers);
@@ -253,16 +314,29 @@ public class App extends PApplet {
         pushStyle();
         pushMatrix();
         translate(pos.x, pos.y, pos.z);
-        stroke(255);
+        stroke(0);
         strokeWeight(1);
+        beginShape(POINTS);
         pointCloud.stream()
-                .map(v -> {
-                    v.mult(scale);
-                    return v;
-                })
-                .forEach(v -> point(v.x, v.y, v.z));
+//                .map(v -> {
+//                    v.mult(scale);
+//                    return v;
+//                })
+                .forEach(v -> vertex(v.x * scale, v.y * scale, v.z * scale));
+        endShape();
         popMatrix();
         popStyle();
+    }
+
+    private void printPointCloud(float scale, PVector pos) {
+        println(pos);
+        println();
+        pointCloud.stream()
+//                .map(v -> {
+//                    v.mult(scale);
+//                    return v;
+//                })
+                .forEach(PApplet::println);
     }
 
     private void drawCurrentRoute() {
@@ -310,11 +384,18 @@ public class App extends PApplet {
     }
 
     private void drawTweet(Tweet tweet) {
-        int w = 2;
+//        int w = 2;
         PVector loc = tweet.getLocation();
         stroke(tweet.getColor());
-        strokeWeight(w);
-        point(loc.x, loc.y);
+//        strokeWeight(w);
+//        point(loc.x, loc.y);
+
+        float r = tweet.getMass() * 2;
+        if (r > 50) {
+            strokeWeight(1);
+            noFill();
+            ellipse(loc.x, loc.y, r, r);
+        }
 
         String text = tweet.username;
         if (drawTweets) text(text, loc.x, loc.y);
@@ -328,8 +409,8 @@ public class App extends PApplet {
         pushStyle();
         noFill();
         // stroke(255, 255, 0, 50);
-        stroke(track.color);
-//        stroke(red(track.color), green(track.color), blue(track.color), 50);
+//        stroke(track.color);
+        stroke(red(track.color), green(track.color), blue(track.color), 50);
         strokeWeight(1);
         beginShape();
         track.history.forEach(v -> vertex(v.x, v.y, v.z));
@@ -337,24 +418,57 @@ public class App extends PApplet {
         popStyle();
     }
 
-    private void drawRoads(CityGraph cg) {
+    private void drawGraph(CityGraph graph) {
+        graph.roads.forEach(this::drawRoad);
+//        for (Road road : graph.roads) {
+//            stroke(cg.strokeColor);
+//            strokeWeight(cg.strokeThickness);
+
+//            beginShape();
+//            road.coords.forEach(v -> vertex(v.x, v.y, v.z));
+//            endShape();
+//        }
+    }
+
+    private void drawRoad(Road road) {
         pushStyle();
         noFill();
-        for (Road road : cg.roads) {
-//            stroke(cg.strokeColor);
-            stroke(255);
-//            strokeWeight(cg.strokeThickness);
-            strokeWeight(1);
+        stroke(0);
+        strokeWeight(1);
+        beginShape(POINTS);
+        road.coords.forEach(v -> vertex(v.x, v.y, v.z));
+        endShape();
 
-            beginShape();
-            road.coords.forEach(v -> vertex(v.x, v.y, v.z));
-            endShape();
-        }
+//        road.coords.forEach(v -> point(v.x, v.y, v.z));
+
         popStyle();
     }
 
-    private void drawCityRoads(Simulation simulation) {
-        for (CityGraph cg : simulation.graphs) drawRoads(cg);
+    private PGraphics renderRoads(CityGraph graph) {
+        PVector graphSize = PVector.sub(graph.rightBottom, graph.topLeft);
+        int width = (int) abs(graphSize.x);
+        int height = (int) abs(graphSize.y);
+
+        PGraphics g = createGraphics(width, height);
+        g.beginDraw();
+        g.background(0);
+        g.strokeWeight(1);
+        g.stroke(255);
+        g.noFill();
+        g.translate(-graph.topLeft.x, -graph.topLeft.y);
+        graph.roads.forEach(road -> {
+            g.beginShape();
+            road.coords.forEach(v -> {
+//                PVector c = PVector.sub(v, graph.topLeft);
+                PVector c = v;
+                g.vertex(c.x, c.y);
+            });
+            g.endShape();
+        });
+        g.endDraw();
+//        g.save("roads.jpg");
+
+        return g;
     }
 
     public void keyPressed() {
@@ -367,6 +481,7 @@ public class App extends PApplet {
 
         if (key == 'g') bakeGraph();
         if (key == 'm') println(getLatLonCursor());
+        if (key == 'p') printPointCloud(ui.pointCloudScale, projector.project(centerCoord));
 
         if (key == ']') selectNextGraph();
         if (key == '[') selectPrevGraph();
@@ -380,8 +495,25 @@ public class App extends PApplet {
         if (key == '7') drawPointCloud = !drawPointCloud;
     }
 
+//    void getBoundaries(ArrayList v){
+//        for (int i = 0; i < v.size(); i++) {
+//            PVector vec = (PVector) v.get(i);
+//            if(vec.x>xMax) xMax = vec.x;
+//            if(vec.x<xMin) xMin = vec.x;
+//            if(vec.y>yMax) yMax = vec.y;
+//            if(vec.y<yMin) yMin = vec.y;
+//            if(vec.z>zMax) zMax = vec.z;
+//            if(vec.z<zMin) zMin = vec.z;
+//        }
+//
+//        mapScreenWidth = xMax-xMin;
+//        mapScreenHeight = yMax-yMin;
+//    }
+
     private void bakeGraph() {
         String dump = GraphUtils.bake(simulation.graphs.get(currentGraphIndex).graph);
         println(dump);
     }
+
+
 }

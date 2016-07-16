@@ -15,30 +15,42 @@ import java.util.ArrayList;
  * @author tmshv
  */
 public class CityGraph {
-    ArrayList<Crossroad> crossroads = new ArrayList<Crossroad>();
-    ArrayList<Road> roads = new ArrayList<Road>();
-    Graph graph = new Graph();
+    ArrayList<Crossroad> crossroads;
+    ArrayList<Road> roads;
+    Graph graph;
 
     int strokeColor = 0xffffffff;
     int strokeThickness = 1;
 
-    LatLon[] bound;
+    private LatLon[] bound;
 
-    public CityGraph(IFeatureCollection fc, IProjector proj) {
+    PVector topLeft;
+    PVector rightBottom;
+
+    public CityGraph(IFeatureCollection fc, IProjector projector) {
         ArrayList<Feature> features = fc.getFeatures();
 
         bound = fc.bounds();
+        topLeft = projector.project(bound[0]);
+        rightBottom = projector.project(bound[1]);
+
         GraphEdge edge;
         Road road;
+        roads = new ArrayList<>();
+        crossroads = new ArrayList<>();
+        graph = new Graph();
         for (Feature f : features) {
             Path path = new Path();
-            for (LatLon ll : f.geometry.coords) {
-                PVector p = proj.project(ll);
-                path.add(p);
-            }
+//            for (LatLon ll : f.geometry.coords) {
+//                PVector p = projector.project(ll);
+//                path.add(p);
+//            }
+            f.geometry.coords.stream()
+                    .map(projector::project)
+                    .forEach(path::add);
 
-            PVector first = proj.project(f.geometry.first());
-            PVector last = proj.project(f.geometry.last());
+            PVector first = projector.project(f.geometry.first());
+            PVector last = projector.project(f.geometry.last());
 
             Crossroad cr1 = getCrossroadAt(first);
             Crossroad cr2 = getCrossroadAt(last);

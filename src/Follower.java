@@ -10,10 +10,10 @@ import static java.lang.Math.min;
  *
  * @author tmshv
  */
-public class Vehicle extends Agent{
+public class Follower extends Agent{
     float r;
 
-    public float goalDistance = 5;
+    public float goalDistance = 20;
 
     PVector finishPoint;
 
@@ -26,7 +26,7 @@ public class Vehicle extends Agent{
 
     private ArrayList<PVector> route;
 
-    public Vehicle(String type, float speed, float force, int c) {
+    public Follower(String type, float speed, float force, int c) {
         super(type, speed, force, c);
     }
 
@@ -42,8 +42,10 @@ public class Vehicle extends Agent{
 
     public void move(Route route) {
         this.route = route.bake();
-        finishPoint = this.route.get(this.route.size() - 1);
-        this.location.set(this.route.get(0));
+        if (this.route.size() > 0) {
+            finishPoint = this.route.get(this.route.size() - 1);
+            this.location.set(this.route.get(0));
+        }
     }
 
     // This function implements Craig Reynolds' path following algorithm
@@ -51,7 +53,7 @@ public class Vehicle extends Agent{
     public void follow() {
         if(route == null) return;
 
-        float roadRadius = 5;
+        float roadRadius = 50;
 
         // Predict location 50 (arbitrary choice) frames ahead
         // This could be based on speed
@@ -118,22 +120,8 @@ public class Vehicle extends Agent{
         // println("var: "+var);
 
         // Only if the distance is greater than the path's radius do we bother to steer
-        // if (worldRecord > roadRadius) {
+//         if (worldRecord > roadRadius) {
         seek(target);
-        // }
-    }
-
-    // A function to get the normal point from a point (p) to a line segment (a-b)
-    // This function could be optimized to make fewer new Vector objects
-    public PVector getNormalPoint(PVector p, PVector a, PVector b) {
-        // Vector from a to p
-        PVector ap = PVector.sub(p, a);
-        // Vector from a to b
-        PVector ab = PVector.sub(b, a);
-        ab.normalize(); // Normalize the line
-        // Project vector "diff" onto line by using the dot product
-        ab.mult(ap.dot(ab));
-        PVector normalPoint = PVector.add(a, ab);
-        return normalPoint;
+//         }
     }
 }

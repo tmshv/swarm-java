@@ -18,6 +18,7 @@ public class UI {
 
     float cursorLat;
     float cursorLon;
+    float cursorHeight;
 
     float step = 12;
 
@@ -38,7 +39,10 @@ public class UI {
         addSpace();
         addSlider("cursorLat", 0, -0.01f, 0.01f);
         addSlider("cursorLon", 0, -0.01f, 0.01f);
-//        addSlider("pc-scale", 0, 0, 1);
+        addSlider("cursorHeight", 0, -100, 100);
+
+        addSpace();
+        addSlider("pcScale", 0, 0, .005f);
     }
 
     void update() {
@@ -47,7 +51,8 @@ public class UI {
         positionZ = getFloat("positionZ");
         cursorLat = getFloat("cursorLat");
         cursorLon = getFloat("cursorLon");
-//        pointCloudScale = getFloat("pc-scale");
+        cursorHeight = getFloat("cursorHeight");
+        pointCloudScale = getFloat("pcScale");
     }
 
     void draw() {

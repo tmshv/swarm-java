@@ -15,7 +15,7 @@ public  class Navigator {
 
     private float f = 1.0f;
 
-    private Vehicle vehicle;
+    private Follower vehicle;
 
     IProjector proj;
 
@@ -25,24 +25,28 @@ public  class Navigator {
         this.algorithm = algorithm;
     }
 
-    public void drive(Vehicle v) {
+    public void drive(Follower v) {
         this.vehicle = v;
     }
 
     public Route navigate(LatLon from, LatLon to) {
-        PVector fromV = proj.project(from);
-        PVector toV = proj.project(to);
-        Crossroad crFrom = this.simulation.graph(graphIndex).findNearestCrossroadTo(fromV);
-        Crossroad crTo = this.simulation.graph(graphIndex).findNearestCrossroadTo(toV);
+        try{
+            PVector fromV = proj.project(from);
+            PVector toV = proj.project(to);
+            Crossroad crFrom = this.simulation.graph(graphIndex).findNearestCrossroadTo(fromV);
+            Crossroad crTo = this.simulation.graph(graphIndex).findNearestCrossroadTo(toV);
 
-        return navigate(crFrom, crTo);
+            return navigate(crFrom, crTo);
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public Route navigate(Crossroad from, Crossroad to) {
         int start = this.simulation.graph(graphIndex).getCrossroadIndex(from);
         int finish = this.simulation.graph(graphIndex).getCrossroadIndex(to);
 
-        return navigate(start, finish); //<>//
+        return navigate(start, finish);
     }
 
     public Route navigate(int from, int to) {

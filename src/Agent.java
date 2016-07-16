@@ -125,6 +125,8 @@ public class Agent implements IInterest, IAgent {
      * @return
      */
     PVector getSteeringDirection(PVector target) {
+        if(target == null) return new PVector();
+
         PVector desired = PVector.sub(target, location);
 
         // If the magnitude of desired equals 0, skip out of here
