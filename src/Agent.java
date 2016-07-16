@@ -9,7 +9,7 @@ import java.util.HashMap;
  * @author tmshv
  */
 public class Agent implements IInterest, IAgent {
-    static int defaultLifetime = 300;
+    static int defaultLifetime = 1000;
 
     PVector location = new PVector();
 

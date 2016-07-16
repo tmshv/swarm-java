@@ -16,17 +16,18 @@ class Emitter {
     private String type;
 
     Emitter(String type, PVector location, int period) {
-        this.type = type;
-        this.period = period;
-        this.location = location;
-
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                // Your database code here
-            }
-        }, 0, period);
+//        this.type = type;
+//        this.period = period;
+//        this.location = location;
+//
+//        timer = new Timer();
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                // Your database code here
+//                update();
+//            }
+//        }, 0, period);
     }
 
     void update(){
