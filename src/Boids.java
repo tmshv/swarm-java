@@ -32,6 +32,10 @@ class Boids extends Agent {
         boids.add(agent);
     }
 
+    int size(){
+        return boids.size();
+    }
+
     /**
      * We accumulate a new acceleration each time based on three rules
      *

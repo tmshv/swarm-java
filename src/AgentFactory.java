@@ -20,6 +20,7 @@ class AgentFactory {
 
     static String[] defaultAttractors = new String[]{};
     static String[] pedestrianAttractors = new String[]{"tweet"};
+    static String[] runnerAttractors = new String[]{"tweet", "tree"};
 
     static void init(PApplet app, IProjector projector, Simulation simulation, Navigator navigator) {
         AgentFactory.app = app;
@@ -47,6 +48,7 @@ class AgentFactory {
     }
 
     static Agent createPedestrian(LatLon loc, LatLon target) {
+        navigator.setLayer("people");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
@@ -55,7 +57,7 @@ class AgentFactory {
         float mass = random(2, 5);
 
         Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
-        a.setLifetime(3000);
+        a.setLifetime(300);
         Arrays.stream(pedestrianAttractors).forEach(a::addInteractionType);
         a.move(route);
         a.color = 0xFFFF0000;
@@ -63,6 +65,7 @@ class AgentFactory {
     }
 
     static Agent createRunner(LatLon loc, LatLon target) {
+        navigator.setLayer("people");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
@@ -71,43 +74,40 @@ class AgentFactory {
         float mass = random(2, 5);
 
         Follower a = createFollower("runner", maxSpeed, maxForce, mass, 0xff00ff00);
-        a.setLifetime(8000);
-        a.addInteractionType("tweet");
-        a.addInteractionType("tree");
+        a.setLifetime(400);
+        Arrays.stream(runnerAttractors).forEach(a::addInteractionType);
         a.move(route);
-        a.color = 0xFFFF0000;
         return a;
     }
 
     static Agent createBike(LatLon loc, LatLon target) {
+        navigator.setLayer("transport");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
         float maxSpeed = random(.003f, .006f);
-        float maxForce = 1;//random(.003f, .006f);
+        float maxForce = 1;
         float mass = random(2, 5);
 
         Follower a = createFollower("bike", maxSpeed, maxForce, mass, 0xffffff00);
-        a.setLifetime(3000);
+        a.setLifetime(300);
         a.addInteractionType("tweet");
         a.move(route);
-        a.color = 0xffffff00;
         return a;
     }
 
     static Agent createTransport(LatLon loc, LatLon target) {
+        navigator.setLayer("transport");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
         float maxSpeed = random(.01f, .02f);
-        float maxForce = 1;//random(.003f, .006f);
+        float maxForce = 1;
         float mass = random(2, 5);
 
-        Follower a = createFollower("bike", maxSpeed, maxForce, mass, 0xff00ffff);
-        a.setLifetime(5000);
-//        a.addInteractionType("tweet");
+        Follower a = createFollower("transport", maxSpeed, maxForce, mass, 0xff00ffff);
+        a.setLifetime(500);
         a.move(route);
-        a.color = 0xffffff00;
         return a;
     }
 
@@ -132,8 +132,6 @@ class AgentFactory {
         float maxForce = random(1, 4);
 
         Boids flock = new Boids(maxSpeed, maxForce, c);
-        simulation.addAgent(flock);
-
         for (int i = 0; i < num; i++) {
             float angle = random(0, (float) (PI * 2));
             PVector vel = PVector.fromAngle(angle);
@@ -144,9 +142,11 @@ class AgentFactory {
             a.location.set(loc);
             a.velocity.set(vel);
             a.addInteractionType("tree");
-            flock.addBoid(a);
-            simulation.addAgent(a);
+            boolean addingStatus = simulation.addAgent(a);
+            if (addingStatus) flock.addBoid(a);
         }
+
+        if (flock.size() > 0) simulation.addAgent(flock);
 
         return flock;
     }

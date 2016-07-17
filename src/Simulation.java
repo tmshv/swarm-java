@@ -16,6 +16,8 @@ public class Simulation {
 
     ArrayList<Track> tracks;
 
+    private int agentsLimit;
+
     Simulation() {
         graphs = new ArrayList<>();
         agents = new ArrayList<>();
@@ -24,12 +26,16 @@ public class Simulation {
         tracks = new ArrayList<>();
     }
 
+    public void setAgentsLimit(int agentsLimit) {
+        this.agentsLimit = agentsLimit;
+    }
+
     public CityGraph graph(int i) {
         return graphs.get(i);
     }
 
     public void update() {
-//        interactAgents();
+        interactAgents();
 
         Iterator<IAgent> i = this.agents.iterator();
         while (i.hasNext()) {
@@ -67,12 +73,17 @@ public class Simulation {
         this.tracks.add(track);
     }
 
-    public void addGraphLayer(CityGraph graph) {
+    public void addGraphLayer(CityGraph graph, String name) {
+        graph.setName(name);
         graphs.add(graph);
     }
 
-    public void addAgent(Agent v) {
-        agents.add(v);
+    public boolean addAgent(Agent v) {
+        if (agents.size() < agentsLimit) {
+            agents.add(v);
+            return true;
+        }
+        return false;
     }
 
     public void addAttractor(Attractor a) {
@@ -112,5 +123,14 @@ public class Simulation {
         ArrayList<Attractor> as = getAttractorsByType(type);
         int index = r.nextInt(as.size());
         return as.get(index);
+    }
+
+    public int getLayerIndex(String name) {
+        for (CityGraph cg : graphs) {
+            if (Objects.equals(cg.getName(), name)) {
+                return graphs.indexOf(cg);
+            }
+        }
+        return 0;
     }
 }

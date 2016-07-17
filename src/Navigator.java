@@ -91,4 +91,8 @@ public  class Navigator {
         }
         return pf;
     }
+
+    public void setLayer(String layerName) {
+        this.graphIndex = simulation.getLayerIndex(layerName);
+    }
 }

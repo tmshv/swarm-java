@@ -156,7 +156,7 @@ public class AppRoads extends PApplet {
         graph.loadFeatures(geo, projector);
         graph.strokeColor = color;
         graph.strokeThickness = 1;
-        simulation.addGraphLayer(graph);
+        simulation.addGraphLayer(graph, "");
     }
 
     private LatLon getLatLonCursor() {

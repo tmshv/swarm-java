@@ -26,6 +26,7 @@ public class CityGraph {
 
     PVector topLeft;
     PVector rightBottom;
+    private String name;
 
     public CityGraph() {
         rightBottom = new PVector();
@@ -185,5 +186,13 @@ public class CityGraph {
             }
         }
         return null;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

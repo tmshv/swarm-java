@@ -11,6 +11,7 @@ public class UI {
     ControlP5 ui;
 
     float pointCloudScale;
+    float pointCloudRotation;
 
     float rotation;
     float rotationZ;
@@ -32,17 +33,18 @@ public class UI {
         ui = new ControlP5(app);
         ui.setAutoDraw(false);
 
-        addSlider("rotation", 0, 0, (float) Math.PI/3);
+        addSlider("rotation", 0, 0, (float) Math.PI / 3);
         addSlider("rotationZ", 0, 0, (float) (Math.PI * 2));
         addSlider("positionZ", 0, -1000, 1000);
 
         addSpace();
-        addSlider("cursorLat", 0, -0.01f, 0.01f);
-        addSlider("cursorLon", 0, -0.01f, 0.01f);
+        addSlider("cursorLat", 0, -0.001f, 0.001f);
+        addSlider("cursorLon", 0, -0.001f, 0.001f);
         addSlider("cursorHeight", 0, -100, 100);
 
         addSpace();
-        addSlider("pcScale", 0, 0, .005f);
+        addSlider("pcScale", 0.0006142857f, 0, .005f);
+        addSlider("pcRot", 0.57f, 0, (float) Math.PI);
     }
 
     void update() {
@@ -53,6 +55,18 @@ public class UI {
         cursorLon = getFloat("cursorLon");
         cursorHeight = getFloat("cursorHeight");
         pointCloudScale = getFloat("pcScale");
+        pointCloudRotation = getFloat("pcRot");
+    }
+
+    void print() {
+        System.out.println("rotation: " + rotation);
+        System.out.println("rotationZ: " + rotationZ);
+        System.out.println("positionZ: " + positionZ);
+        System.out.println("cursorLat: " + cursorLat);
+        System.out.println("cursorLon: " + cursorLon);
+        System.out.println("cursorHeight: " + cursorHeight);
+        System.out.println("pointCloudScale: " + pointCloudScale);
+        System.out.println("pointCloudRotation: " + pointCloudRotation);
     }
 
     void draw() {

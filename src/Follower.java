@@ -18,8 +18,8 @@ public class Follower extends Agent{
     PVector finishPoint;
 
     public PVector predictLocation = new PVector();
-    public PVector normalLocation = new PVector();
-    public PVector targetLocation = new PVector();
+//    public PVector normalLocation = new PVector();
+//    public PVector targetLocation = new PVector();
 
     float predictMult = 50;
     float dirMult = 5;
@@ -36,8 +36,8 @@ public class Follower extends Agent{
             finishPoint = null;
         } else {
             follow();
-            super.run();
         }
+        super.run();
     }
 
     public void move(Route route) {
@@ -53,7 +53,7 @@ public class Follower extends Agent{
     public void follow() {
         if(route == null) return;
 
-        float roadRadius = 50;
+        float roadRadius = 10;
 
         // Predict location 50 (arbitrary choice) frames ahead
         // This could be based on speed
@@ -114,8 +114,8 @@ public class Follower extends Agent{
             }
         }
 
-        normalLocation = normalPoint;
-        targetLocation = target;
+//        normalLocation = normalPoint;
+//        targetLocation = target;
 
         // println("var: "+var);
 

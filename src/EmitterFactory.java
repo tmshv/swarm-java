@@ -65,7 +65,7 @@ public class EmitterFactory {
                 Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
                 if (target != null) {
                     LatLon t = projector.unproject(target.getLocation());
-                    AgentFactory.createRunner(loc, t);
+                    AgentFactory.createBike(loc, t);
                 }
             }
         };
@@ -80,7 +80,7 @@ public class EmitterFactory {
                 Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
                 if (target != null) {
                     LatLon t = projector.unproject(target.getLocation());
-                    AgentFactory.createRunner(loc, t);
+                    AgentFactory.createTransport(loc, t);
                 }
             }
         };
