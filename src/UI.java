@@ -32,7 +32,7 @@ public class UI {
         ui = new ControlP5(app);
         ui.setAutoDraw(false);
 
-        addSlider("rotation", 0, 0, (float) Math.PI);
+        addSlider("rotation", 0, 0, (float) Math.PI/3);
         addSlider("rotationZ", 0, 0, (float) (Math.PI * 2));
         addSlider("positionZ", 0, -1000, 1000);
 

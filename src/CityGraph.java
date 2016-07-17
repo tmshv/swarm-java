@@ -27,7 +27,15 @@ public class CityGraph {
     PVector topLeft;
     PVector rightBottom;
 
-    public CityGraph(IFeatureCollection fc, IProjector projector) {
+    public CityGraph() {
+        rightBottom = new PVector();
+        topLeft = new PVector();
+        roads = new ArrayList<>();
+        crossroads = new ArrayList<>();
+        graph = new Graph();
+    }
+
+    public void loadFeatures(IFeatureCollection fc, IProjector projector) {
         ArrayList<Feature> features = fc.getFeatures();
 
         bound = fc.bounds();
@@ -35,17 +43,10 @@ public class CityGraph {
         rightBottom = projector.project(bound[1]);
 
         GraphEdge edge;
-        Road road;
-        roads = new ArrayList<>();
-        crossroads = new ArrayList<>();
-        graph = new Graph();
         for (Feature f : features) {
             Path path = new Path();
-//            for (LatLon ll : f.geometry.coords) {
-//                PVector p = projector.project(ll);
-//                path.add(p);
-//            }
-            f.geometry.coords.stream()
+            f.geometry.coords
+                    .stream()
                     .map(projector::project)
                     .forEach(path::add);
 
@@ -57,13 +58,15 @@ public class CityGraph {
             float weight = cr1.coord.dist(cr2.coord);
 
             edge = addGraphEdge(cr1.node.id(), cr2.node.id(), weight);
-            road = new Road(path.coords, cr1, cr2, edge);
-            roads.add(road);
+            addRoad(new Road(path.coords, cr1, cr2, edge));
 
             edge = addGraphEdge(cr2.node.id(), cr1.node.id(), weight);
-            road = new Road(path.reverse().coords, cr2, cr1, edge);
-            roads.add(road);
+            addRoad(new Road(path.reverse().coords, cr2, cr1, edge));
         }
+    }
+
+    public void addRoad(Road road) {
+        roads.add(road);
     }
 
     public Road getRoad(GraphEdge edge) {

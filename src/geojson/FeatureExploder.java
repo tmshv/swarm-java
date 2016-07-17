@@ -32,12 +32,12 @@ public class FeatureExploder implements IFeatureCollection {
     }
 
     private ArrayList<Feature> explode(Feature feature) {
-        ArrayList<Feature> result = new ArrayList<Feature>();
+        ArrayList<Feature> result = new ArrayList<>();
         Geometry source = feature.geometry;
 
         int i = 0;
         while (true) {
-            ArrayList<LatLon> coords = new ArrayList<LatLon>();
+            ArrayList<LatLon> coords = new ArrayList<>();
             coords.add(source.coords.get(i));
             coords.add(source.coords.get(i + 1));
             Geometry g = new Geometry();

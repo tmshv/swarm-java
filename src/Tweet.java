@@ -6,7 +6,7 @@ import processing.core.PVector;
  * @author tmshv
  */
 public class Tweet extends Attractor {
-    float followersCoef = 0.3f;
+    float followersCoef = 0.15f;
     String text;
     String username;
     int followers;

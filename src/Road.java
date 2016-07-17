@@ -21,7 +21,7 @@ public class Road extends Path {
         this.cr2 = cr2;
         this.edge = edge;
 
-        cr1.addRoad(this);
-        cr2.addRoad(this);
+        if (cr1 != null) cr1.addRoad(this);
+        if (cr2 != null) cr2.addRoad(this);
     }
 }

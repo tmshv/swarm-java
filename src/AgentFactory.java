@@ -51,10 +51,8 @@ class AgentFactory {
         if (route == null) return null;
 
         float maxSpeed = random(.001f, .002f);
-        float maxForce = 1;//random(.001f, .002f);
+        float maxForce = 1;
         float mass = random(2, 5);
-//        int[] colors = new int[]{0xffff0000, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xffff00ff, 0xffffffff, 0xffcccccc};
-//        int c = colors[(int) (random(0, colors.length - 1))];
 
         Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
         a.setLifetime(3000);
