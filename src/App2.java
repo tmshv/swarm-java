@@ -8,9 +8,9 @@ import processing.data.Table;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class App extends PApplet {
+public class App2 extends PApplet {
     static public void main(String[] passedArgs) {
-        String[] appletArgs = new String[]{"App"};
+        String[] appletArgs = new String[]{"App2"};
         if (passedArgs != null) {
             PApplet.main(concat(appletArgs, passedArgs));
         } else {
@@ -72,27 +72,11 @@ public class App extends PApplet {
         cursor = new PVector();
 
         pointCloud = new ArrayList<>();
-//        loadPointCloud(loadTable("data/udarnik-10p.csv", "header"));
-        loadPointCloud(loadTable("data/udarnik-10p.csv", "header"));
+        loadPointCloud(loadTable("data/udarnik.csv", "header"));
 
         loadRoadLayer("data/geo/road-transport.geojson", "transport", 0xff999999, 2);
         loadRoadLayer("data/geo/road-pedestrian.geojson", "people", 0xffdddddd, 1);
 
-        loadAttractors(new GeoJSON(loadJSONObject("data/geo/trees.geojson")), "tree", 10, 0x6600ff00);
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/pedestrian1.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/pedestrian2.csv", "header"));
-        loadTweets(0xCCC7FFBD, loadTable("data/tweets/runner.csv", "header"));
-        loadTweets(0xCCC7FFBD, loadTable("data/tweets/runner2.csv", "header"));
-        loadTweets(0xCCC7FFBD, loadTable("data/tweets/runner3.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/tourist-pedestrian.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/tourist1.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/tourist2.csv", "header"));
-
-//        loadData(loadTable("data/ae-temp.csv", "header"));
-        loadData(loadTable("data/ae.csv", "header"));
-
-//        int cameraZ = -500;
-//        camera.setOffset(new PVector(width / 2, height / 2, cameraZ));
         camera.lookAt(centerCoord);
 
 //        setStartPoint(new LatLon(55.73898f, 37.605858f));
@@ -120,10 +104,8 @@ public class App extends PApplet {
 
 //        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 
-
-//        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
-//        EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
-        
+        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
+        EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
 
 //        EmitterFactory.createBike(new LatLon(55.746178f, 37.615578f), 10 * 1000);
 
@@ -138,7 +120,6 @@ public class App extends PApplet {
 
     public void draw() {
         background(255);
-        LatLon mouse = getLatLonCursor();
 
         ui.update();
 
@@ -146,16 +127,6 @@ public class App extends PApplet {
         cursorCoord.lon = centerCoord.lon + ui.cursorLon;
         cursor = projector.project(cursorCoord);
         cursor.z = ui.cursorHeight;
-
-//        if (mousePressed) {
-//            if (mouseButton == LEFT) setStartPoint(mouse);
-//            if (mouseButton == RIGHT) setEndPoint(mouse);
-//
-//            if (crossroadStart != null && crossroadFinish != null) {
-//                Route r = navigator.navigate(crossroadStart, crossroadFinish);
-//                if (r != null) currentRoute = r.bake();
-//            }
-//        }
 
         pushMatrix();
         rotateX(ui.rotation);
@@ -168,18 +139,12 @@ public class App extends PApplet {
 
         if (drawPointCloud) drawPointCloud(ui.pointCloudScale, cursor, ui.pointCloudRotation);
         if (drawRoads) simulation.graphs.forEach(this::drawGraph);
-        if (currentRoute != null) drawCurrentRoute();
-//        if (drawRoads) simulation.graphs.forEach(this::drawGraph);
         if (drawHistoryTracks) drawHistoryTracks();
         drawCityAgents(drawAgents, drawTracks);
         if (drawAttractors) simulation.attractors.forEach(a -> {
             if (a instanceof Tweet) drawTweet((Tweet) a);
             else drawAttractor(a);
         });
-        simulation.agents.stream()
-                .map(a -> (Agent) a)
-                .filter(a -> a != null)
-                .forEach(this::drawAgentAttractors);
 
         //Draw cursor
         pushStyle();
@@ -203,35 +168,6 @@ public class App extends PApplet {
         hint(ENABLE_DEPTH_TEST);
     }
 
-    private void loadData(Table table) {
-        int m = 1000;
-        int minPeriod = 10000;
-
-        table.rows().forEach(row -> {
-            float lat = row.getFloat("lat");
-            float lon = row.getFloat("lon");
-            int runner = row.getInt("runner");
-            int pedestrian = row.getInt("pedestrian");
-            int bike = row.getInt("bike");
-            int transport = row.getInt("transport");
-            String type = row.getString("type");
-
-            float attractionMass = 100;
-            int i = 0xffffff00;
-            LatLon coord = new LatLon(lat, lon);
-            PVector loc = projector.project(coord);
-
-            Attractor a = new Attractor(type, attractionMass, loc);
-            a.setColor(i);
-            simulation.addAttractor(a);
-
-            if (pedestrian > 0) EmitterFactory.createPedestrian(coord, max(minPeriod, pedestrian * m));
-            if (runner > 0) EmitterFactory.createRunner(coord, max(minPeriod, runner * m));
-            if (bike > 0) EmitterFactory.createBike(coord, max(minPeriod, bike * m));
-            if (transport > 0) EmitterFactory.createTransport(coord, max(minPeriod, transport * m));
-        });
-    }
-
     private void loadRoadLayer(String filename, String name, int color, int thickness) {
         IFeatureCollection geo;
         geo = new GeoJSON(loadJSONObject(filename));
@@ -242,34 +178,6 @@ public class App extends PApplet {
         graph.strokeColor = color;
         graph.strokeThickness = thickness;
         simulation.addGraphLayer(graph, name);
-    }
-
-    private void loadAttractors(GeoJSON fc, String type, float mass, int color) {
-        ArrayList<Feature> features = fc.getFeatures();
-        features.stream()
-                .filter(feature -> Objects.equals(feature.geometry.type, "Point"))
-                .forEach(feature -> {
-                    LatLon ll = feature.geometry.coords.get(0);
-                    PVector p = projector.project(ll);
-                    Attractor a = new Attractor(type, mass, p);
-                    a.setColor(color);
-                    simulation.addAttractor(a);
-                });
-    }
-
-    private void loadTweets(int color, Table table) {
-        table.rows().forEach(row -> {
-            float lat = row.getFloat("lat");
-            float lon = row.getFloat("lon");
-            int followers = row.getInt("followers");
-
-//            followers *= 100;
-
-            PVector loc = projector.project(new LatLon(lat, lon));
-            Tweet a = new Tweet(loc, row.getString("tweet"), row.getString("username"), followers);
-            a.setColor(color);
-            simulation.addAttractor(a);
-        });
     }
 
     private void loadPointCloud(Table table) {
@@ -283,7 +191,6 @@ public class App extends PApplet {
 
     private LatLon getLatLonCursor() {
         return cursorCoord;
-//        return camera.getCoordAtScreen(mouseX, mouseY);
     }
 
 
@@ -322,15 +229,6 @@ public class App extends PApplet {
         popStyle();
     }
 
-    private void drawCurrentRoute() {
-        strokeWeight(1);
-        stroke(235);
-        noFill();
-        beginShape();
-        for (PVector p : currentRoute) vertex(p.x, p.y);
-        endShape();
-    }
-
     private void drawCityAgents(boolean drawVehicle, boolean drawTrack) {
         simulation.agents
                 .stream()
@@ -361,30 +259,6 @@ public class App extends PApplet {
             strokeWeight(2);
             point(loc.x, loc.y, loc.z);
         }
-    }
-
-    private void drawAgentAttractors(Agent agent) {
-        pushStyle();
-        stroke(agent.color);
-        strokeWeight(1);
-        agent.currentAttractors.forEach(a -> {
-            PVector c = GeometryUtils.interpolate(agent.getLocation(), a.getLocation(), 0.5f);
-            float radius = c.mag();
-
-            PVector h = new PVector(0, 0, radius);
-            PVector c1 = agent.getLocation();
-            PVector c2 = a.getLocation();
-            PVector a1 = PVector.add(c1, h);
-            PVector a2 = PVector.add(c2, h);
-
-            curve(
-                    c1.x, c1.y, c1.z,
-                    a1.x, a1.y, a1.z,
-                    a2.x, a2.y, a2.z,
-                    c2.x, c2.y, c2.z
-            );
-        });
-        popStyle();
     }
 
     private void drawTweet(Tweet tweet) {
@@ -438,11 +312,7 @@ public class App extends PApplet {
         if (keyCode == LEFT) camera.moveTarget(0, -cameraStep);
         if (keyCode == RIGHT) camera.moveTarget(0, cameraStep);
 
-        if (key == ' ') saveFrame("app.jpg");
-
-        if (key == 'g') bakeGraph();
         if (key == 'm') println(getLatLonCursor());
-        if (key == 'u') ui.print();
 
         if (key == ']') selectNextGraph();
         if (key == '[') selectPrevGraph();
@@ -451,13 +321,6 @@ public class App extends PApplet {
         if (key == '2') drawAgents = !drawAgents;
         if (key == '3') drawTracks = !drawTracks;
         if (key == '4') drawHistoryTracks = !drawHistoryTracks;
-        if (key == '5') drawAttractors = !drawAttractors;
-        if (key == '6') drawTweets = !drawTweets;
         if (key == '7') drawPointCloud = !drawPointCloud;
-    }
-
-    private void bakeGraph() {
-        String dump = GraphUtils.bake(simulation.graphs.get(currentGraphIndex).graph);
-        println(dump);
     }
 }

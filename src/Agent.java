@@ -1,4 +1,5 @@
 import processing.core.PVector;
+import sun.jvm.hotspot.utilities.RBColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,16 +34,23 @@ public class Agent implements IInterest, IAgent {
     private boolean moving;
     private int lifetime;
 
+    ArrayList<Attractor> currentAttractors;
+
     public Agent(String type, float maxForce, float maxSpeed, int color) {
+        int trackAlpha = 5;
+        int rgb = color & 0x00ffffff;
+        int argb = trackAlpha << 24 | rgb;
+
         this.type = type;
         this.maxForce = maxForce;
         this.maxSpeed = maxSpeed;
         this.color = color;
-        this.track = new Track(color);
+        this.track = new Track(argb);
         interestValues = new HashMap<>();
         interactTypes = new ArrayList<>();
         lifetime = Agent.defaultLifetime;
         moving = true;
+        currentAttractors = new ArrayList<>();
     }
 
     public void run() {
@@ -55,6 +63,8 @@ public class Agent implements IInterest, IAgent {
                 moving = false;
             }
         }
+
+        if(currentAttractors.size() > 0) currentAttractors = new ArrayList<>();
     }
 
     @Override
@@ -104,6 +114,8 @@ public class Agent implements IInterest, IAgent {
             dir.normalize();
             dir.mult(force);
             applyForce(dir);
+
+            currentAttractors.add(attractor);
         }
     }
 

@@ -56,7 +56,8 @@ class AgentFactory {
         float maxForce = 1;
         float mass = random(2, 5);
 
-        Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
+//        Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
+        Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xff000000);
         a.setLifetime(300);
         Arrays.stream(pedestrianAttractors).forEach(a::addInteractionType);
         a.move(route);

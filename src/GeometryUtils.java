@@ -52,4 +52,10 @@ class GeometryUtils{
 	    // if (p1 == p2) return "destination";
 	    return "between";
 	}
+
+	public static PVector interpolate(PVector from, PVector to, float value) {
+		PVector c = PVector.sub(to, from);
+		c.mult(value);
+		return PVector.add(from, c);
+	}
 }
