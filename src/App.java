@@ -90,14 +90,14 @@ public class App extends PApplet {
         loadRoadLayer("data/geo/road-pedestrian.geojson", "people", 0x11ffffff, 2);
 
         loadAttractors(new GeoJSON(loadJSONObject("data/geo/trees.geojson")), "tree", 5, 15, 0x9900ff00);
-        loadTweets(0xff20309F, loadTable("data/tweets/pedestrian1.csv", "header"));
-        loadTweets(0xff20309F, loadTable("data/tweets/pedestrian2.csv", "header"));
-        loadTweets(0xff20309D, loadTable("data/tweets/runner.csv", "header"));
-        loadTweets(0xff20309D, loadTable("data/tweets/runner2.csv", "header"));
-        loadTweets(0xff20309D, loadTable("data/tweets/runner3.csv", "header"));
-        loadTweets(0xff20309F, loadTable("data/tweets/tourist-pedestrian.csv", "header"));
-        loadTweets(0xff20309F, loadTable("data/tweets/tourist1.csv", "header"));
-        loadTweets(0xff20309F, loadTable("data/tweets/tourist2.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/pedestrian1.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/pedestrian2.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/runner.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/runner2.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/runner3.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/tourist-pedestrian.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/tourist1.csv", "header"));
+        loadTweets(0xff00c0bb, loadTable("data/tweets/tourist2.csv", "header"));
 
 //        loadData(loadTable("data/ae-temp.csv", "header"));
         loadData(loadTable("data/ae.csv", "header"));
@@ -379,10 +379,10 @@ public class App extends PApplet {
 //            image(tree, loc.x, loc.y, r, r);
 
             fill(ColorUtil.setAlpha(attractor.getColor(), 30));
-//            ellipse(loc.x, loc.y, r, r);
             pushMatrix();
             translate(loc.x, loc.y, loc.z + h);
-            sphere(r);
+            ellipse(0, 0, r, r);
+//            sphere(r);
             popMatrix();
 
         } else {
