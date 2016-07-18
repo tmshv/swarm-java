@@ -33,9 +33,9 @@ public class UI {
         ui = new ControlP5(app);
         ui.setAutoDraw(false);
 
-        addSlider("rotation", 0, 0, (float) Math.PI / 3);
+        addSlider("rotation", 0.93f, 0, (float) Math.PI / 3);
         addSlider("rotationZ", 0, 0, (float) (Math.PI * 2));
-        addSlider("positionZ", 0, -1000, 1000);
+        addSlider("positionZ", -68.57f, -1000, 1000);
 
         addSpace();
         addSlider("cursorLat", 0, -0.001f, 0.001f);
