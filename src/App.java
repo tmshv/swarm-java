@@ -78,7 +78,8 @@ public class App extends PApplet {
         EmitterFactory.init(projector, simulation);
         AgentFactory.init(this, projector, simulation, navigator);
 
-        centerCoord = new LatLon(55.74317f, 37.61516f);
+//        centerCoord = new LatLon(55.74317f, 37.61516f);
+        centerCoord = new LatLon(55.74141f, 37.614784f);
         cursorCoord = new LatLon(55.74317f, 37.61516f);
         cursor = new PVector();
 
@@ -132,8 +133,8 @@ public class App extends PApplet {
 //        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 
 
-        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
-        EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
+//        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
+//        EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
 
 
 //        EmitterFactory.createBike(new LatLon(55.746178f, 37.615578f), 10 * 1000);
@@ -479,6 +480,7 @@ public class App extends PApplet {
         if (key == 'g') bakeGraph();
         if (key == 'm') println(getLatLonCursor());
         if (key == 'u') ui.print();
+        if (key == 'c') camera.print();
 
         if (key == ']') selectNextGraph();
         if (key == '[') selectPrevGraph();

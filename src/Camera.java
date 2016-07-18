@@ -23,7 +23,7 @@ public class Camera {
         offset = new PVector();
     }
 
-    void setOffset(PVector v){
+    void setOffset(PVector v) {
         offset = v;
     }
 
@@ -48,6 +48,10 @@ public class Camera {
         app.translate(offset.x, offset.y);
         PVector coord = projector.project(target);
         app.translate(-coord.x, -coord.y);
+    }
+
+    public void print() {
+        System.out.println("camera target: " + target);
     }
 
     public int zoomIn() {
