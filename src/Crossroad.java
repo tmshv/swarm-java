@@ -14,7 +14,7 @@ public class Crossroad {
     GraphNode node;
 
     public Crossroad(PVector coord, GraphNode node) {
-        this.roads = new ArrayList<Road>();
+        this.roads = new ArrayList<>();
         this.coord = coord;
         this.node = node;
     }

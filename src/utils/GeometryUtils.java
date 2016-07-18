@@ -1,6 +1,8 @@
+package utils;
+
 import processing.core.PVector;
 
-class GeometryUtils{
+public class GeometryUtils{
 	/**
 	* Calculate projection of vertex on the line
 	**/

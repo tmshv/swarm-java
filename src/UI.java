@@ -76,6 +76,7 @@ public class UI {
     private void addSlider(String name, float value, float from, float to) {
         ui
                 .addSlider(name)
+                .setColorLabel(0)
                 .setPosition(pos.x, pos.y)
                 .setSize(width, height)
                 .setRange(from, to)

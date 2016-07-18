@@ -1,5 +1,5 @@
 import processing.core.PVector;
-import sun.jvm.hotspot.utilities.RBColor;
+import utils.ColorUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,42 +10,41 @@ import java.util.HashMap;
  * @author tmshv
  */
 public class Agent implements IInterest, IAgent {
-    static int defaultLifetime = 1000;
+    private static int defaultLifetime = 1000;
+    private static int defaultTrackAlpha = 50;
 
-    PVector location = new PVector();
-
+    protected PVector location = new PVector();
     protected PVector velocity = new PVector();
     protected PVector acceleration = new PVector();
 
     public float maxForce;    // Maximum steering force
     public float maxSpeed;    // Maximum speed
 
-    public float interestDistance = 50;
+    private float interestDistance = 50;
     public float interestThreshold = 0.001f;
     public float interestMultiplier = 0.9f;
 
-    public int color;
-    public float mass = 5;
+    private int color;
+
+    private float mass = 5;
 
     private HashMap<IInterest, Float> interestValues;
+
     private Track track;
     private ArrayList<String> interactTypes;
     private String type;
     private boolean moving;
     private int lifetime;
-
-    ArrayList<Attractor> currentAttractors;
+    private ArrayList<Attractor> currentAttractors;
 
     public Agent(String type, float maxForce, float maxSpeed, int color) {
-        int trackAlpha = 5;
-        int rgb = color & 0x00ffffff;
-        int argb = trackAlpha << 24 | rgb;
+        int trackColor = ColorUtil.setAlpha(color, defaultTrackAlpha);
 
         this.type = type;
         this.maxForce = maxForce;
         this.maxSpeed = maxSpeed;
         this.color = color;
-        this.track = new Track(argb);
+        this.track = new Track(trackColor);
         interestValues = new HashMap<>();
         interactTypes = new ArrayList<>();
         lifetime = Agent.defaultLifetime;
@@ -64,7 +63,37 @@ public class Agent implements IInterest, IAgent {
             }
         }
 
-        if(currentAttractors.size() > 0) currentAttractors = new ArrayList<>();
+        if (currentAttractors.size() > 0) currentAttractors = new ArrayList<>();
+    }
+
+    @Override
+    public float getMass() {
+        return mass;
+    }
+
+    @Override
+    public void setMass(float value) {
+        mass = value;
+    }
+
+    @Override
+    public ArrayList<Attractor> getCurrentAttractors() {
+        return currentAttractors;
+    }
+
+    @Override
+    public float getInterestDistance() {
+        return interestDistance;
+    }
+
+    @Override
+    public void setInterestDistance(float value) {
+        interestDistance = value;
+    }
+
+    @Override
+    public int getColor() {
+        return color;
     }
 
     @Override
@@ -137,7 +166,7 @@ public class Agent implements IInterest, IAgent {
      * @return
      */
     PVector getSteeringDirection(PVector target) {
-        if(target == null) return new PVector();
+        if (target == null) return new PVector();
 
         PVector desired = PVector.sub(target, location);
 

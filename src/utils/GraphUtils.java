@@ -1,6 +1,8 @@
+package utils;
+
 import pathfinder.*;
 
-class GraphUtils{
+public class GraphUtils{
 	public static String bake(Graph graph){
 		GraphNode[] nodes = graph.getNodeArray();
 		GraphEdge[] edges = graph.getAllEdgeArray();

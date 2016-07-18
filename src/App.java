@@ -4,6 +4,8 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.data.Table;
+import utils.ColorUtil;
+import utils.GraphUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -32,7 +34,7 @@ public class App extends PApplet {
     private boolean drawAttractors = true;
     private boolean drawTweets = false;
     private boolean drawPointCloud = false;
-    private float cameraStep = .00125f;
+    private float cameraStep = .000125f;
     private int currentGraphIndex = 0;
 
     private ArrayList<PVector> currentRoute;
@@ -50,6 +52,8 @@ public class App extends PApplet {
     private PGraphics bakedRoads;
     private PImage img;
 
+    private PGraphics tree;
+
     public void settings() {
         fullScreen(P3D);
 //        smooth();
@@ -57,6 +61,13 @@ public class App extends PApplet {
 
     public void setup() {
         ui = new UI(this, 10, 10);
+
+        tree = createGraphics(40, 40);
+        tree.beginDraw();
+        tree.stroke(0x00ff00);
+        tree.fill(0xcc00ff00);
+        tree.ellipse(20, 20, 35, 35);
+        tree.endDraw();
 
         projector = new SphericalMercator(0.80d);
         camera = new Camera(projector);
@@ -75,18 +86,18 @@ public class App extends PApplet {
 //        loadPointCloud(loadTable("data/udarnik-10p.csv", "header"));
         loadPointCloud(loadTable("data/udarnik-10p.csv", "header"));
 
-        loadRoadLayer("data/geo/road-transport.geojson", "transport", 0xff999999, 2);
-        loadRoadLayer("data/geo/road-pedestrian.geojson", "people", 0xffdddddd, 1);
+        loadRoadLayer("data/geo/road-transport.geojson", "transport", 0x22ffffff, 3);
+        loadRoadLayer("data/geo/road-pedestrian.geojson", "people", 0x11ffffff, 2);
 
-        loadAttractors(new GeoJSON(loadJSONObject("data/geo/trees.geojson")), "tree", 10, 0x6600ff00);
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/pedestrian1.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/pedestrian2.csv", "header"));
-        loadTweets(0xCCC7FFBD, loadTable("data/tweets/runner.csv", "header"));
-        loadTweets(0xCCC7FFBD, loadTable("data/tweets/runner2.csv", "header"));
-        loadTweets(0xCCC7FFBD, loadTable("data/tweets/runner3.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/tourist-pedestrian.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/tourist1.csv", "header"));
-        loadTweets(0xCCCBD7FF, loadTable("data/tweets/tourist2.csv", "header"));
+        loadAttractors(new GeoJSON(loadJSONObject("data/geo/trees.geojson")), "tree", 5, 15, 0x9900ff00);
+        loadTweets(0xff20309F, loadTable("data/tweets/pedestrian1.csv", "header"));
+        loadTweets(0xff20309F, loadTable("data/tweets/pedestrian2.csv", "header"));
+        loadTweets(0xff20309D, loadTable("data/tweets/runner.csv", "header"));
+        loadTweets(0xff20309D, loadTable("data/tweets/runner2.csv", "header"));
+        loadTweets(0xff20309D, loadTable("data/tweets/runner3.csv", "header"));
+        loadTweets(0xff20309F, loadTable("data/tweets/tourist-pedestrian.csv", "header"));
+        loadTweets(0xff20309F, loadTable("data/tweets/tourist1.csv", "header"));
+        loadTweets(0xff20309F, loadTable("data/tweets/tourist2.csv", "header"));
 
 //        loadData(loadTable("data/ae-temp.csv", "header"));
         loadData(loadTable("data/ae.csv", "header"));
@@ -121,9 +132,9 @@ public class App extends PApplet {
 //        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 
 
-//        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
-//        EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
-        
+        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
+        EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
+
 
 //        EmitterFactory.createBike(new LatLon(55.746178f, 37.615578f), 10 * 1000);
 
@@ -137,7 +148,7 @@ public class App extends PApplet {
     }
 
     public void draw() {
-        background(255);
+        background(0);
         LatLon mouse = getLatLonCursor();
 
         ui.update();
@@ -162,6 +173,7 @@ public class App extends PApplet {
         rotateZ(ui.rotationZ);
         camera.update(this);
         translate(0, 0, ui.positionZ);
+        translate(0, height / 2);
         translate(width / 2, height / 2);
 
         simulation.update();
@@ -170,16 +182,16 @@ public class App extends PApplet {
         if (drawRoads) simulation.graphs.forEach(this::drawGraph);
         if (currentRoute != null) drawCurrentRoute();
 //        if (drawRoads) simulation.graphs.forEach(this::drawGraph);
-        if (drawHistoryTracks) drawHistoryTracks();
+        if (drawHistoryTracks) simulation.tracks.forEach(this::drawTrack);
         drawCityAgents(drawAgents, drawTracks);
         if (drawAttractors) simulation.attractors.forEach(a -> {
             if (a instanceof Tweet) drawTweet((Tweet) a);
             else drawAttractor(a);
         });
-        simulation.agents.stream()
-                .map(a -> (Agent) a)
-                .filter(a -> a != null)
-                .forEach(this::drawAgentAttractors);
+//        simulation.agents.forEach(this::drawAgentInfo);
+
+        IAgent nearest = simulation.getNearestAgent(cursor);
+        if( nearest != null) drawAgentInfo(nearest);
 
         //Draw cursor
         pushStyle();
@@ -190,6 +202,8 @@ public class App extends PApplet {
 
         popMatrix();
         drawUI();
+
+        saveFrame("data/iaac-####.jpg");
     }
 
     private void cross(int i, float x, float y, float z) {
@@ -244,11 +258,12 @@ public class App extends PApplet {
         simulation.addGraphLayer(graph, name);
     }
 
-    private void loadAttractors(GeoJSON fc, String type, float mass, int color) {
+    private void loadAttractors(GeoJSON fc, String type, float minMass, float maxMass, int color) {
         ArrayList<Feature> features = fc.getFeatures();
         features.stream()
                 .filter(feature -> Objects.equals(feature.geometry.type, "Point"))
                 .forEach(feature -> {
+                    float mass = random(minMass, maxMass);
                     LatLon ll = feature.geometry.coords.get(0);
                     PVector p = projector.project(ll);
                     Attractor a = new Attractor(type, mass, p);
@@ -333,19 +348,21 @@ public class App extends PApplet {
 
     private void drawCityAgents(boolean drawVehicle, boolean drawTrack) {
         simulation.agents
-                .stream()
-                .map(a -> (Agent) a)
-                .filter(a -> a != null)
+//                .stream()
+//                .map(a -> (Agent) a)
+//                .filter(a -> a != null)
                 .forEach(a -> {
-                    if (drawVehicle) drawAgent(a);
                     if (drawTrack) drawTrack(a.getTrack());
+                    if (drawVehicle) drawAgent(a);
                 });
     }
 
-    private void drawAgent(Agent agent) {
-        stroke(agent.color);
-        strokeWeight(agent.mass);
-        point(agent.location.x, agent.location.y);
+    private void drawAgent(IAgent agent) {
+        int color = agent.getColor();
+        stroke(color);
+        strokeWeight(agent.getMass());
+        PVector loc = agent.getLocation();
+        point(loc.x, loc.y, loc.z);
     }
 
     private void drawAttractor(Attractor attractor) {
@@ -356,6 +373,18 @@ public class App extends PApplet {
             stroke(attractor.getColor());
             strokeWeight(1);
             line(loc.x, loc.y, loc.z, loc.x, loc.y, loc.z + h);
+
+            float r = map(attractor.getMass(), 5, 15, 1, 3);
+
+//            image(tree, loc.x, loc.y, r, r);
+
+            fill(ColorUtil.setAlpha(attractor.getColor(), 30));
+//            ellipse(loc.x, loc.y, r, r);
+            pushMatrix();
+            translate(loc.x, loc.y, loc.z + h);
+            sphere(r);
+            popMatrix();
+
         } else {
             stroke(attractor.getColor());
             strokeWeight(2);
@@ -363,27 +392,20 @@ public class App extends PApplet {
         }
     }
 
-    private void drawAgentAttractors(Agent agent) {
+    private void drawAgentInfo(IAgent agent) {
+        int color = agent.getColor();
+        PVector loc = agent.getLocation();
         pushStyle();
-        stroke(agent.color);
+        stroke(color);
+//        stroke(0xcc000000);
         strokeWeight(1);
-        agent.currentAttractors.forEach(a -> {
-            PVector c = GeometryUtils.interpolate(agent.getLocation(), a.getLocation(), 0.5f);
-            float radius = c.mag();
+//        joint(agent.getLocation(), cursor);
+        agent.getCurrentAttractors().forEach(a -> joint(loc, a.getLocation()));
 
-            PVector h = new PVector(0, 0, radius);
-            PVector c1 = agent.getLocation();
-            PVector c2 = a.getLocation();
-            PVector a1 = PVector.add(c1, h);
-            PVector a2 = PVector.add(c2, h);
-
-            curve(
-                    c1.x, c1.y, c1.z,
-                    a1.x, a1.y, a1.z,
-                    a2.x, a2.y, a2.z,
-                    c2.x, c2.y, c2.z
-            );
-        });
+        strokeWeight(1);
+        stroke(ColorUtil.setAlpha(color, 50));
+        float s = agent.getInterestDistance() * 2;
+        ellipse(loc.x, loc.y, s, s);
         popStyle();
     }
 
@@ -400,10 +422,6 @@ public class App extends PApplet {
 
         String text = tweet.username;
         if (drawTweets) text(text, loc.x, loc.y);
-    }
-
-    private void drawHistoryTracks() {
-        simulation.tracks.forEach(this::drawTrack);
     }
 
     private void drawTrack(Track track) {
@@ -430,6 +448,24 @@ public class App extends PApplet {
         beginShape();
         road.coords.forEach(v -> vertex(v.x, v.y, v.z));
         endShape();
+    }
+
+    private void joint(PVector c1, PVector c2) {
+//        PVector c = utils.GeometryUtils.interpolate(c1, c2, 0.5f);
+//        float radius = c.mag() / 2;
+
+        float radius = c1.dist(c2);
+
+        PVector h = new PVector(0, 0, -radius);
+        PVector a1 = PVector.add(c1, h);
+        PVector a2 = PVector.add(c2, h);
+
+        curve(
+                a1.x, a1.y, a1.z,
+                c1.x, c1.y, c1.z,
+                c2.x, c2.y, c2.z,
+                a2.x, a2.y, a2.z
+        );
     }
 
     public void keyPressed() {

@@ -2,6 +2,7 @@ import geojson.IProjector;
 import geojson.LatLon;
 import processing.core.PApplet;
 import processing.core.PVector;
+import utils.ColorUtil;
 
 import java.util.Arrays;
 
@@ -19,8 +20,10 @@ class AgentFactory {
     private static Navigator navigator;
 
     static String[] defaultAttractors = new String[]{};
-    static String[] pedestrianAttractors = new String[]{"tweet"};
+//    static String[] pedestrianAttractors = new String[]{"tweet", "pedestrian"};
+    static String[] pedestrianAttractors = new String[]{};
     static String[] runnerAttractors = new String[]{"tweet", "tree"};
+    static String[] bikeAttractors = new String[]{"tweet"};
 
     static void init(PApplet app, IProjector projector, Simulation simulation, Navigator navigator) {
         AgentFactory.app = app;
@@ -29,19 +32,19 @@ class AgentFactory {
         AgentFactory.navigator = navigator;
     }
 
-    static RandomWalker createRandomWalker(LatLon loc, String type, float mass, int color) {
-        float maxSpeed = random(1, 10);
-        float maxForce = random(1, 4);
-
+    static RandomWalker createRandomWalker(LatLon loc, String type, float maxSpeed, float maxForce, float mass, int color) {
         RandomWalker a = new RandomWalker(type, maxSpeed, maxForce, color);
         a.location.set(projector.project(loc));
-        a.mass = mass;
+        a.setMass(mass);
         simulation.addAgent(a);
         return a;
     }
 
     static Agent createFlyAgent(LatLon latLon) {
-        Agent a = createRandomWalker(latLon, "fly", 1f, 0xFFCCCCCC);
+        float maxSpeed = random(1, 10);
+        float maxForce = random(1, 4);
+
+        Agent a = createRandomWalker(latLon, "fly", maxSpeed, maxForce, 1f, 0xFFCCCCCC);
         a.setLifetime(600);
         a.addInteractionType("tree");
         return a;
@@ -56,12 +59,16 @@ class AgentFactory {
         float maxForce = 1;
         float mass = random(2, 5);
 
-//        Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
-        Follower a = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xff000000);
-        a.setLifetime(300);
+        Agent a;
+        if(random(0, 1) < .1){
+            a = createRandomWalker(loc, "pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
+        }else{
+            Follower f = createFollower("pedestrian", maxSpeed, maxForce, mass, 0xffff0000);
+            f.move(route);
+            a = f;
+        }
+        a.setLifetime(1000);
         Arrays.stream(pedestrianAttractors).forEach(a::addInteractionType);
-        a.move(route);
-        a.color = 0xFFFF0000;
         return a;
     }
 
@@ -74,8 +81,9 @@ class AgentFactory {
         float maxForce = 1;//random(.001f, .002f);
         float mass = random(2, 5);
 
-        Follower a = createFollower("runner", maxSpeed, maxForce, mass, 0xff00ff00);
-        a.setLifetime(400);
+        Follower a = createFollower("runner", maxSpeed, maxForce, mass, 0xff0043ff);
+        a.setLifetime(1000);
+        a.setInterestDistance(random(130, 150));
         Arrays.stream(runnerAttractors).forEach(a::addInteractionType);
         a.move(route);
         return a;
@@ -90,9 +98,10 @@ class AgentFactory {
         float maxForce = 1;
         float mass = random(2, 5);
 
-        Follower a = createFollower("bike", maxSpeed, maxForce, mass, 0xffffff00);
-        a.setLifetime(300);
-        a.addInteractionType("tweet");
+        Follower a = createFollower("bike", maxSpeed, maxForce, mass, 0xffdd00ff);
+        a.setLifetime(1000);
+        a.setInterestDistance(random(140, 170));
+        Arrays.stream(bikeAttractors).forEach(a::addInteractionType);
         a.move(route);
         return a;
     }
@@ -106,7 +115,8 @@ class AgentFactory {
         float maxForce = 1;
         float mass = random(2, 5);
 
-        Follower a = createFollower("transport", maxSpeed, maxForce, mass, 0xff00ffff);
+        Follower a = createFollower("transport", maxSpeed, maxForce, mass, 0xffffe655);
+        a.setInterestDistance(random(150, 350));
         a.setLifetime(500);
         a.move(route);
         return a;
@@ -117,7 +127,7 @@ class AgentFactory {
         float dirMult = random(2, 10);
 
         Follower v = new Follower(type, maxSpeed, maxForce, color);
-        v.mass = mass;
+        v.setMass(mass);
         v.predictMult = predictMult;
         v.dirMult = dirMult;
         simulation.addAgent(v);
@@ -126,7 +136,7 @@ class AgentFactory {
     }
 
     static Boids createBoids(LatLon latLon, String type, int num) {
-        int c = 0xff666666;
+        int c = 0xff11aa00;
 
         PVector loc = projector.project(latLon);
         float maxSpeed = random(1, 10);
@@ -138,8 +148,9 @@ class AgentFactory {
             PVector vel = PVector.fromAngle(angle);
 
             Agent a = new Agent(type, maxSpeed, maxForce, c);
+            a.getTrack().color = ColorUtil.setAlpha(c, 40);
             a.setLifetime(400);
-            a.mass = 2;
+            a.setMass(2);
             a.location.set(loc);
             a.velocity.set(vel);
             a.addInteractionType("tree");

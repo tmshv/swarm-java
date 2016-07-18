@@ -241,8 +241,8 @@ public class App2 extends PApplet {
     }
 
     private void drawAgent(Agent agent) {
-        stroke(agent.color);
-        strokeWeight(agent.mass);
+        stroke(agent.getColor());
+        strokeWeight(agent.getMass());
         point(agent.location.x, agent.location.y);
     }
 

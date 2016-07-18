@@ -1,4 +1,5 @@
 import geojson.LatLon;
+import processing.core.PVector;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -132,5 +133,18 @@ public class Simulation {
             }
         }
         return 0;
+    }
+
+    public IAgent getNearestAgent(PVector loc) {
+        IAgent nearest = null;
+        float md = Float.MAX_VALUE;
+        for (IAgent a : agents) {
+            float d = a.getLocation().dist(loc);
+            if(d < md){
+                nearest = a;
+                md = d;
+            }
+        }
+        return nearest;
     }
 }

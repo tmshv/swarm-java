@@ -1,5 +1,7 @@
 import processing.core.PVector;
 
+import java.util.ArrayList;
+
 /**
  * Created at 15/07/16
  *
@@ -23,4 +25,16 @@ public interface IAgent {
     public String getType();
 
     public Track getTrack();
+
+    public int getColor();
+
+    public ArrayList<Attractor> getCurrentAttractors();
+
+    public float getInterestDistance();
+
+    public void setInterestDistance(float value);
+
+    public float getMass();
+
+    public void setMass(float value);
 }

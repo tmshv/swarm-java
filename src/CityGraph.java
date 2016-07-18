@@ -6,6 +6,7 @@ import pathfinder.Graph;
 import pathfinder.GraphEdge;
 import pathfinder.GraphNode;
 import processing.core.PVector;
+import utils.GeometryUtils;
 
 import java.util.ArrayList;
 

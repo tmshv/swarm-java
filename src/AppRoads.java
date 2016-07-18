@@ -1,13 +1,10 @@
 import geojson.*;
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import processing.core.PImage;
 import processing.core.PVector;
-import processing.data.Table;
+import utils.GraphUtils;
 
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Random;
 
 public class AppRoads extends PApplet {
     static public void main(String[] passedArgs) {
