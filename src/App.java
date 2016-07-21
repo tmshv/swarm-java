@@ -84,7 +84,6 @@ public class App extends PApplet {
         cursor = new PVector();
 
         pointCloud = new ArrayList<>();
-//        loadPointCloud(loadTable("data/udarnik-10p.csv", "header"));
         loadPointCloud(loadTable("data/udarnik-10p.csv", "header"));
 
         loadRoadLayer("data/geo/road-transport.geojson", "transport", 0x22ffffff, 3);
