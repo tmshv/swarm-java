@@ -11,7 +11,7 @@ import java.util.HashMap;
  */
 public class Agent implements IInterest, IAgent {
     private static int defaultLifetime = 1000;
-    private static int defaultTrackAlpha = 50;
+    private static int defaultTrackAlpha = 25;
 
     protected PVector location = new PVector();
     protected PVector velocity = new PVector();
@@ -116,14 +116,13 @@ public class Agent implements IInterest, IAgent {
         lifetime = value;
     }
 
-    public float getInteractionPower(IAgent other) {
-        return 10;
-    }
-
     public void interact(IAgent other) {
         if (!interactTypes.contains(other.getType())) return;
 
-        float power = getInteractionPower(other);
+        IInterest ii = (IInterest) other;
+        if(ii == null) return;
+
+        float power = getInterestValueFor(ii);
         if (power != 0) {
             PVector v = getSteeringDirection(other.getLocation());
             v.normalize();

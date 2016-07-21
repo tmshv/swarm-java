@@ -16,15 +16,16 @@ public class EmitterFactory {
         EmitterFactory.simulation = simulation;
     }
 
-    public static void createBoids(LatLon loc, String type, int count, int i) {
+    public static void createBoids(LatLon loc, String type, int count, int i, int delay) {
         PVector v = projector.project(loc);
-        Emitter e = new Emitter(type, v, i) {
+        Emitter e = new Emitter(type, v, i, delay) {
             @Override
             void update() {
                 AgentFactory.createBoids(loc, "bird", count);
             }
         };
         simulation.addEmitter(e);
+//        e.update();
     }
 
     public static void createPedestrian(LatLon loc, int i) {

@@ -36,7 +36,7 @@ public class Simulation {
     }
 
     public void update() {
-        interactAgents();
+//        interactAgents();
 
         Iterator<IAgent> i = this.agents.iterator();
         while (i.hasNext()) {

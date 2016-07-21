@@ -1,4 +1,5 @@
 import processing.core.PVector;
+import sun.jvm.hotspot.debugger.windbg.DLL;
 
 import java.util.Date;
 
@@ -8,31 +9,20 @@ import java.util.Date;
  * @author tmshv
  */
 class Emitter {
-    //    private Timer timer;
-//    ScheduledExecutorService service;
     private int period;
     private PVector location;
     private String type;
     private long timestamp;
 
     Emitter(String type, PVector location, int period) {
+        this(type, location, period, 0);
+    }
+
+    Emitter(String type, PVector location, int period, int delay) {
         this.type = type;
         this.period = period;
         this.location = location;
-
-        this.timestamp = getTimestamp();
-
-//        service = Executors.newSingleThreadScheduledExecutor();
-//        service.scheduleAtFixedRate(this::update, 0, period, TimeUnit.MILLISECONDS);
-
-//        timer = new Timer();
-//        timer.scheduleAtFixedRate(new TimerTask() {
-//            @Override
-//            public void run() {
-//                // Your database code here
-//                update();
-//            }
-//        }, 0, period);
+        this.timestamp = getTimestamp() + delay;
     }
 
     void run() {

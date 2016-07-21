@@ -29,10 +29,8 @@ public class App2 extends PApplet {
     private boolean drawAgents = true;
     private boolean drawTracks = true;
     private boolean drawHistoryTracks = true;
-    private boolean drawAttractors = true;
-    private boolean drawTweets = false;
-    private boolean drawPointCloud = false;
-    private float cameraStep = .00125f;
+    private boolean drawPointCloud = true;
+    private float cameraStep = .000125f;
     private int currentGraphIndex = 0;
 
     private ArrayList<PVector> currentRoute;
@@ -67,17 +65,17 @@ public class App2 extends PApplet {
         EmitterFactory.init(projector, simulation);
         AgentFactory.init(this, projector, simulation, navigator);
 
-        centerCoord = new LatLon(55.74317f, 37.61516f);
+        centerCoord = new LatLon(55.74141f, 37.614784f);
         cursorCoord = new LatLon(55.74317f, 37.61516f);
         cursor = new PVector();
 
         pointCloud = new ArrayList<>();
-        loadPointCloud(loadTable("data/udarnik.csv", "header"));
+        loadPointCloud(loadTable("data/udarnik-20p.csv", "header"));
 
         loadRoadLayer("data/geo/road-transport.geojson", "transport", 0xff999999, 2);
         loadRoadLayer("data/geo/road-pedestrian.geojson", "people", 0xffdddddd, 1);
 
-        camera.lookAt(centerCoord);
+        camera.lookAt(new LatLon(55.74166f, 37.614407f));
 
 //        setStartPoint(new LatLon(55.73898f, 37.605858f));
 //        setEndPoint(new LatLon(55.739960443216781f, 37.617145380088019f));
@@ -104,8 +102,11 @@ public class App2 extends PApplet {
 
 //        AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 
-        EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
-        EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
+        EmitterFactory.createBoids(new LatLon(55.741917f, 37.614784f), "bird", 20, 30 * 1000, 3 * 1000);
+        EmitterFactory.createBoids(new LatLon(55.7415f, 37.614048f), "bird2", 20, 30 * 1000, 0);
+
+        EmitterFactory.createBoids(new LatLon(55.741856f, 37.61407f), "bird", 20, 30 * 1000, 10 * 1000);
+        EmitterFactory.createBoids(new LatLon(55.741528f, 37.61468f), "bird2", 20, 30 * 1000, 12 * 1000);
 
 //        EmitterFactory.createBike(new LatLon(55.746178f, 37.615578f), 10 * 1000);
 
@@ -137,14 +138,16 @@ public class App2 extends PApplet {
 
         simulation.update();
 
-        if (drawPointCloud) drawPointCloud(ui.pointCloudScale, cursor, ui.pointCloudRotation);
+        PVector pcv = projector.project(new LatLon(55.741604f, 37.61447f));
+//        PVector pcv = cursor;
+        if (drawPointCloud) drawPointCloud(ui.pointCloudScale, pcv, ui.pointCloudRotation);
         if (drawRoads) simulation.graphs.forEach(this::drawGraph);
         if (drawHistoryTracks) drawHistoryTracks();
         drawCityAgents(drawAgents, drawTracks);
-        if (drawAttractors) simulation.attractors.forEach(a -> {
-            if (a instanceof Tweet) drawTweet((Tweet) a);
-            else drawAttractor(a);
-        });
+//        if (drawAttractors) simulation.attractors.forEach(a -> {
+//            if (a instanceof Tweet) drawTweet((Tweet) a);
+//            else drawAttractor(a);
+//        });
 
         //Draw cursor
         pushStyle();
@@ -242,7 +245,7 @@ public class App2 extends PApplet {
 
     private void drawAgent(Agent agent) {
         stroke(agent.getColor());
-        strokeWeight(agent.getMass());
+        strokeWeight(2);
         point(agent.location.x, agent.location.y);
     }
 
@@ -273,7 +276,6 @@ public class App2 extends PApplet {
         }
 
         String text = tweet.username;
-        if (drawTweets) text(text, loc.x, loc.y);
     }
 
     private void drawHistoryTracks() {
@@ -313,6 +315,7 @@ public class App2 extends PApplet {
         if (keyCode == RIGHT) camera.moveTarget(0, cameraStep);
 
         if (key == 'm') println(getLatLonCursor());
+        if (key == 'c') camera.print();
 
         if (key == ']') selectNextGraph();
         if (key == '[') selectPrevGraph();

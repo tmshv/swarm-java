@@ -33,9 +33,14 @@ public class UI {
         ui = new ControlP5(app);
         ui.setAutoDraw(false);
 
-        addSlider("rotation", 0.93f, 0, (float) Math.PI / 3);
+//        float pz = -68.57f;
+        float pz = 577f;
+
+//        float value = 0.93f;
+        float value = 0;
+        addSlider("rotation", value, 0, (float) Math.PI / 3);
         addSlider("rotationZ", 0, 0, (float) (Math.PI * 2));
-        addSlider("positionZ", -68.57f, -1000, 1000);
+        addSlider("positionZ", pz, -1000, 1000);
 
         addSpace();
         addSlider("cursorLat", 0, -0.001f, 0.001f);
@@ -76,8 +81,8 @@ public class UI {
     private void addSlider(String name, float value, float from, float to) {
         ui
                 .addSlider(name)
-                .setColorLabel(0)
-                .setPosition(pos.x, pos.y)
+//                .setColorLabel(0)
+                .setPosition(pos.x,  pos.y)
                 .setSize(width, height)
                 .setRange(from, to)
                 .setValue(value);

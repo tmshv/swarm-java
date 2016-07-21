@@ -144,13 +144,18 @@ class AgentFactory {
 
         Boids flock = new Boids(maxSpeed, maxForce, c);
         for (int i = 0; i < num; i++) {
+            maxSpeed = random(.1f, 1f);
+            maxForce = 1;
+            float mass = random(4, 20);
+
             float angle = random(0, (float) (PI * 2));
             PVector vel = PVector.fromAngle(angle);
 
             Agent a = new Agent(type, maxSpeed, maxForce, c);
             a.getTrack().color = ColorUtil.setAlpha(c, 40);
             a.setLifetime(400);
-            a.setMass(2);
+            a.setMass(mass);
+            a.interestMultiplier = 0.975f;
             a.location.set(loc);
             a.velocity.set(vel);
             a.addInteractionType("tree");
