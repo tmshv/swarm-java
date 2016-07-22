@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import processing.core.PVector;
 import sun.jvm.hotspot.debugger.windbg.DLL;
 
@@ -8,17 +10,17 @@ import java.util.Date;
  *
  * @author tmshv
  */
-class Emitter {
+public class Emitter {
     private int period;
     private PVector location;
     private String type;
     private long timestamp;
 
-    Emitter(String type, PVector location, int period) {
+    public Emitter(String type, PVector location, int period) {
         this(type, location, period, 0);
     }
 
-    Emitter(String type, PVector location, int period, int delay) {
+    public Emitter(String type, PVector location, int period, int delay) {
         this.type = type;
         this.period = period;
         this.location = location;
@@ -33,7 +35,7 @@ class Emitter {
         }
     }
 
-    void update() {
+    public void update() {
 
     }
 

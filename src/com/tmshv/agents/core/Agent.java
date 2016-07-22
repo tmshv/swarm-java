@@ -1,5 +1,7 @@
+package com.tmshv.agents.core;
+
 import processing.core.PVector;
-import utils.ColorUtil;
+import com.tmshv.agents.utils.ColorUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

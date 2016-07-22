@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import geojson.IProjector;
 import geojson.LatLon;
 import processing.core.PApplet;
@@ -17,7 +19,7 @@ public class Camera {
 
     private int zoom = 1;
 
-    Camera(IProjector p) {
+    public Camera(IProjector p) {
         target = new LatLon();
         projector = p;
         offset = new PVector();

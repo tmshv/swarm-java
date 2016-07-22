@@ -1,4 +1,4 @@
-package utils;
+package com.tmshv.agents.utils;
 
 import pathfinder.*;
 

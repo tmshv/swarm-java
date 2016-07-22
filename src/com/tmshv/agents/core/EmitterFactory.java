@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import geojson.IProjector;
 import geojson.LatLon;
 import processing.core.PVector;
@@ -20,7 +22,7 @@ public class EmitterFactory {
         PVector v = projector.project(loc);
         Emitter e = new Emitter(type, v, i, delay) {
             @Override
-            void update() {
+            public void update() {
                 AgentFactory.createBoids(loc, "bird", count);
             }
         };
@@ -32,7 +34,7 @@ public class EmitterFactory {
         PVector v = projector.project(loc);
         Emitter e = new Emitter("pedestrian", v, i) {
             @Override
-            void update() {
+            public void update() {
                 Attractor target = simulation.getRandomAttractor(AgentFactory.pedestrianAttractors);
                 if (target != null) {
                     LatLon t = projector.unproject(target.getLocation());
@@ -47,7 +49,7 @@ public class EmitterFactory {
         PVector v = projector.project(loc);
         Emitter e = new Emitter("runner", v, i) {
             @Override
-            void update() {
+            public void update() {
                 Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
                 if (target != null) {
                     LatLon t = projector.unproject(target.getLocation());
@@ -62,7 +64,7 @@ public class EmitterFactory {
         PVector v = projector.project(loc);
         Emitter e = new Emitter("bike", v, i) {
             @Override
-            void update() {
+            public void update() {
                 Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
                 if (target != null) {
                     LatLon t = projector.unproject(target.getLocation());
@@ -77,7 +79,7 @@ public class EmitterFactory {
         PVector v = projector.project(loc);
         Emitter e = new Emitter("transport", v, i) {
             @Override
-            void update() {
+            public void update() {
                 Attractor target = simulation.getRandomAttractor(AgentFactory.defaultAttractors);
                 if (target != null) {
                     LatLon t = projector.unproject(target.getLocation());

@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import pathfinder.GraphEdge;
 import pathfinder.GraphNode;
 import processing.core.PVector;

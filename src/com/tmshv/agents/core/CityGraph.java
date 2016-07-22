@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import geojson.Feature;
 import geojson.IFeatureCollection;
 import geojson.IProjector;
@@ -6,7 +8,7 @@ import pathfinder.Graph;
 import pathfinder.GraphEdge;
 import pathfinder.GraphNode;
 import processing.core.PVector;
-import utils.GeometryUtils;
+import com.tmshv.agents.utils.GeometryUtils;
 
 import java.util.ArrayList;
 
@@ -17,11 +19,11 @@ import java.util.ArrayList;
  */
 public class CityGraph {
     ArrayList<Crossroad> crossroads;
-    ArrayList<Road> roads;
-    Graph graph;
+    public ArrayList<Road> roads;
+    public Graph graph;
 
-    int strokeColor = 0xffffffff;
-    int strokeThickness = 1;
+    public int strokeColor = 0xffffffff;
+    public int strokeThickness = 1;
 
     private LatLon[] bound;
 
@@ -123,7 +125,7 @@ public class CityGraph {
     // void drawCrossroads(){
     //   pushStyle();
 
-    //   for (Crossroad cr : this.crossroads) {
+    //   for (com.tmshv.agents.core.Crossroad cr : this.crossroads) {
     //     noStroke();
     //     fill(255, 30);
 

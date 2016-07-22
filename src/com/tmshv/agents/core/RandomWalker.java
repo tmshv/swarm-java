@@ -1,3 +1,6 @@
+package com.tmshv.agents.core;
+
+import com.tmshv.agents.core.Agent;
 import processing.core.PVector;
 
 import java.util.Random;

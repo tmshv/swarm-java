@@ -1,5 +1,8 @@
+package com.tmshv.agents.core;
+
+import com.tmshv.agents.core.Agent;
 import processing.core.PVector;
-import utils.GeometryUtils;
+import com.tmshv.agents.utils.GeometryUtils;
 
 import java.util.ArrayList;
 
@@ -11,7 +14,7 @@ import static java.lang.Math.min;
  *
  * @author tmshv
  */
-public class Follower extends Agent{
+public class Follower extends Agent {
     float r;
 
     public float goalDistance = 20;
@@ -91,7 +94,7 @@ public class Follower extends Agent{
                 normalPoint = b.copy();
                 // If we're at the end we really want the next line segment for looking ahead
                 // a = p.points.get((i+1)%p.points.mass());
-                // b = p.points.get((i+2)%p.points.mass());  // Path wraps around
+                // b = p.points.get((i+2)%p.points.mass());  // com.tmshv.agents.core.Path wraps around
                 // dir = PVector.sub(b, a);
             }
 

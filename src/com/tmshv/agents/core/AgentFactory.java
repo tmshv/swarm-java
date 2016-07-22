@@ -1,8 +1,10 @@
+package com.tmshv.agents.core;
+
 import geojson.IProjector;
 import geojson.LatLon;
 import processing.core.PApplet;
 import processing.core.PVector;
-import utils.ColorUtil;
+import com.tmshv.agents.utils.ColorUtil;
 
 import java.util.Arrays;
 
@@ -13,7 +15,7 @@ import static java.lang.Math.PI;
  *
  * @author tmshv
  */
-class AgentFactory {
+public class AgentFactory {
     private static PApplet app;
     private static IProjector projector;
     private static Simulation simulation;
@@ -25,14 +27,14 @@ class AgentFactory {
     static String[] runnerAttractors = new String[]{"tweet", "tree"};
     static String[] bikeAttractors = new String[]{"tweet"};
 
-    static void init(PApplet app, IProjector projector, Simulation simulation, Navigator navigator) {
+    public static void init(PApplet app, IProjector projector, Simulation simulation, Navigator navigator) {
         AgentFactory.app = app;
         AgentFactory.projector = projector;
         AgentFactory.simulation = simulation;
         AgentFactory.navigator = navigator;
     }
 
-    static RandomWalker createRandomWalker(LatLon loc, String type, float maxSpeed, float maxForce, float mass, int color) {
+    public static RandomWalker createRandomWalker(LatLon loc, String type, float maxSpeed, float maxForce, float mass, int color) {
         RandomWalker a = new RandomWalker(type, maxSpeed, maxForce, color);
         a.location.set(projector.project(loc));
         a.setMass(mass);
@@ -40,7 +42,7 @@ class AgentFactory {
         return a;
     }
 
-    static Agent createFlyAgent(LatLon latLon) {
+    public static Agent createFlyAgent(LatLon latLon) {
         float maxSpeed = random(1, 10);
         float maxForce = random(1, 4);
 
@@ -50,7 +52,7 @@ class AgentFactory {
         return a;
     }
 
-    static Agent createPedestrian(LatLon loc, LatLon target) {
+    public static Agent createPedestrian(LatLon loc, LatLon target) {
         navigator.setLayer("people");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
@@ -72,7 +74,7 @@ class AgentFactory {
         return a;
     }
 
-    static Agent createRunner(LatLon loc, LatLon target) {
+    public static Agent createRunner(LatLon loc, LatLon target) {
         navigator.setLayer("people");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
@@ -89,7 +91,7 @@ class AgentFactory {
         return a;
     }
 
-    static Agent createBike(LatLon loc, LatLon target) {
+    public static Agent createBike(LatLon loc, LatLon target) {
         navigator.setLayer("transport");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
@@ -106,7 +108,7 @@ class AgentFactory {
         return a;
     }
 
-    static Agent createTransport(LatLon loc, LatLon target) {
+    public static Agent createTransport(LatLon loc, LatLon target) {
         navigator.setLayer("transport");
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
@@ -122,7 +124,7 @@ class AgentFactory {
         return a;
     }
 
-    static Follower createFollower(String type, float maxSpeed, float maxForce, float mass, int color) {
+    public static Follower createFollower(String type, float maxSpeed, float maxForce, float mass, int color) {
         float predictMult = random(10, 50);
         float dirMult = random(2, 10);
 
@@ -135,7 +137,7 @@ class AgentFactory {
         return v;
     }
 
-    static Boids createBoids(LatLon latLon, String type, int num) {
+    public static Boids createBoids(LatLon latLon, String type, int num) {
         int c = 0xff11aa00;
 
         PVector loc = projector.project(latLon);

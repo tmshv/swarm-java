@@ -1,3 +1,6 @@
+package com.tmshv.agents.core;
+
+import com.tmshv.agents.core.Agent;
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -25,7 +28,7 @@ class Boids extends Agent {
 
     public void run() {
         flock();
-//        boids.forEach(Agent::run);
+//        boids.forEach(com.tmshv.agents.core.Agent::run);
     }
 
     void addBoid(Agent agent) {
@@ -64,7 +67,7 @@ class Boids extends Agent {
         PVector sum = new PVector(0, 0);
         int count = 0;
         for (Agent other : boids) {
-            float d = PVector.dist(agent.location, other.location);
+            float d = PVector.dist(agent.getLocation(), other.getLocation());
             if ((d > 0) && (d < neighborDistanceAlign)) {
                 sum.add(other.velocity);
                 count++;

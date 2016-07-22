@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import processing.core.PVector;
 
 /**
@@ -8,7 +10,7 @@ import processing.core.PVector;
 public class Tweet extends Attractor {
     float followersCoef = 0.15f;
     String text;
-    String username;
+    public String username;
     int followers;
 
     public Tweet(PVector location, String text, String username, int followers) {

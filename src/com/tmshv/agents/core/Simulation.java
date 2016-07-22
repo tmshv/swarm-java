@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import geojson.LatLon;
 import processing.core.PVector;
 
@@ -15,11 +17,11 @@ public class Simulation {
     public ArrayList<Attractor> attractors;
     public ArrayList<Emitter> emitters;
 
-    ArrayList<Track> tracks;
+    public ArrayList<Track> tracks;
 
     private int agentsLimit;
 
-    Simulation() {
+    public Simulation() {
         graphs = new ArrayList<>();
         agents = new ArrayList<>();
         attractors = new ArrayList<>();
@@ -140,7 +142,7 @@ public class Simulation {
         float md = Float.MAX_VALUE;
         for (IAgent a : agents) {
             float d = a.getLocation().dist(loc);
-            if(d < md){
+            if (d < md) {
                 nearest = a;
                 md = d;
             }

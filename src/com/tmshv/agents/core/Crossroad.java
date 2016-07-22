@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import pathfinder.GraphNode;
 import processing.core.PVector;
 
@@ -38,7 +40,7 @@ public class Crossroad {
     /**
      * Find a road for moving from cr to this
      **/
-    // Feature arrive(Crossroad cr){
+    // Feature arrive(com.tmshv.agents.core.Crossroad cr){
     //   for(Feature f : cr.roads){
 
     //     if (f.geometry.last().equals(cr.coord)) return f;

@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import processing.core.PVector;
 
 /**
@@ -5,14 +7,14 @@ import processing.core.PVector;
  *
  * @author tmshv
  */
-class Attractor implements IInterest{
+public class Attractor implements IInterest{
     private float mass;
     private PVector location;
 
     private String type;
 
     private int color;
-    Attractor(String type, float mass, PVector location) {
+    public Attractor(String type, float mass, PVector location) {
         this.type = type;
         this.mass = mass;
         this.location = location;

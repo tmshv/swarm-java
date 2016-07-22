@@ -1,3 +1,5 @@
+package com.tmshv.agents.core;
+
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -8,9 +10,9 @@ import java.util.ArrayList;
  * @author tmshv
  */
 public class Track {
-    ArrayList<PVector> history = new ArrayList<>();
+    public ArrayList<PVector> history = new ArrayList<>();
 
-    int color;
+    public int color;
 
     Track(int c) {
         color = c;
