@@ -1,6 +1,5 @@
 package com.tmshv.agents.core;
 
-import com.tmshv.agents.core.Agent;
 import processing.core.PVector;
 
 import java.util.Random;
@@ -14,7 +13,7 @@ public class RandomWalker extends Agent {
     private Random random = new Random();
 
     public RandomWalker(String type, float maxForce, float maxSpeed, int agentColor) {
-        super(type, maxForce, maxSpeed, agentColor);
+        super(type, maxSpeed, maxForce, agentColor);
     }
 
     @Override

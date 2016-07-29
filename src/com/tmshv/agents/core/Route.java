@@ -15,7 +15,7 @@ public class Route {
     ArrayList<Road> roads;
 
     public Route(CityGraph cg, GraphNode[] route) {
-        this(new ArrayList<Road>());
+        this(new ArrayList<>());
 
         for (int i = 0; i < route.length - 1; i++) {
             GraphNode n1 = route[i];
@@ -33,13 +33,13 @@ public class Route {
     }
 
     public ArrayList<PVector> bake() {
-        ArrayList<PVector> route = new ArrayList<PVector>();
+        ArrayList<PVector> route = new ArrayList<>();
 
         if (roads.size() > 0) {
             route.add(roads.get(0).cr1.coord);
 
             for (Road r : roads) {
-                route.addAll(r.getInnerCoords());
+                route.addAll(r.getPath().getInnerCoords());
                 route.add(r.cr2.coord);
             }
         }

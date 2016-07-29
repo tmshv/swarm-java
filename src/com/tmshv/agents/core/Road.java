@@ -10,20 +10,29 @@ import java.util.ArrayList;
  *
  * @author tmshv
  */
-public class Road extends Path {
+public class Road{
     Crossroad cr1;
+
     Crossroad cr2;
 
-    GraphEdge edge;
+    private GraphEdge edge;
 
-    public Road(ArrayList<PVector> coords, Crossroad cr1, Crossroad cr2, GraphEdge edge) {
-        super(coords);
-
+    private Path path;
+    public Road(Path path, Crossroad cr1, Crossroad cr2, GraphEdge edge) {
+        this.path = path;
         this.cr1 = cr1;
         this.cr2 = cr2;
         this.edge = edge;
 
         if (cr1 != null) cr1.addRoad(this);
         if (cr2 != null) cr2.addRoad(this);
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public GraphEdge getEdge() {
+        return edge;
     }
 }

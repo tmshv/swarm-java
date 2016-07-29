@@ -128,10 +128,14 @@ public class AgentFactory {
         float predictMult = random(10, 50);
         float dirMult = random(2, 10);
 
+        return createFollower(type, maxSpeed, maxForce, predictMult, dirMult, mass, color);
+    }
+
+    public static Follower createFollower(String type, float maxSpeed, float maxForce, float mass, float pm, float dm, int color) {
         Follower v = new Follower(type, maxSpeed, maxForce, color);
         v.setMass(mass);
-        v.predictMult = predictMult;
-        v.dirMult = dirMult;
+        v.predictMult = pm;
+        v.dirMult = dm;
         simulation.addAgent(v);
 
         return v;
@@ -153,7 +157,7 @@ public class AgentFactory {
             float angle = random(0, (float) (PI * 2));
             PVector vel = PVector.fromAngle(angle);
 
-            Agent a = new Agent(type, maxSpeed, maxForce, c);
+            Agent a = new Agent(type, maxForce, maxSpeed, c);
             a.getTrack().color = ColorUtil.setAlpha(c, 40);
             a.setLifetime(400);
             a.setMass(mass);

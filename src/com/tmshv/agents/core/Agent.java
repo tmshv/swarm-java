@@ -39,7 +39,7 @@ public class Agent implements IInterest, IAgent {
     private int lifetime;
     private ArrayList<Attractor> currentAttractors;
 
-    public Agent(String type, float maxForce, float maxSpeed, int color) {
+    public Agent(String type, float maxSpeed, float maxForce, int color) {
         int trackColor = ColorUtil.setAlpha(color, defaultTrackAlpha);
 
         this.type = type;
@@ -156,6 +156,7 @@ public class Agent implements IInterest, IAgent {
 
     void seek(PVector target) {
         PVector steer = getSteeringDirection(target);
+        steer.limit(maxForce);
         applyForce(steer);
     }
 
@@ -180,10 +181,7 @@ public class Agent implements IInterest, IAgent {
         desired.mult(maxSpeed);
 
         // Steering = Desired minus Velocity
-        PVector steer = PVector.sub(desired, velocity);
-        steer.limit(maxForce);  // Limit to maximum steering force
-
-        return steer;
+        return PVector.sub(desired, velocity);
     }
 
 

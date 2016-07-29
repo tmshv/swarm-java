@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class Crossroad {
     ArrayList<Road> roads;
-    PVector coord;
+    public PVector coord;
     GraphNode node;
 
     public Crossroad(PVector coord, GraphNode node) {

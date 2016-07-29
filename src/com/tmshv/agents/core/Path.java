@@ -13,12 +13,23 @@ import java.util.Collections;
 public class Path {
     public ArrayList<PVector> coords;
 
+    private double radius;
+
     public Path() {
-        this(new ArrayList<>());
+        this(new ArrayList<>(), 0);
     }
 
-    public Path(ArrayList<PVector> cs) {
-        this.coords = cs;
+    public Path(double radius) {
+        this(new ArrayList<>(), radius);
+    }
+
+    public Path(ArrayList<PVector> coords, double radius) {
+        this.coords = coords;
+        this.radius = radius;
+    }
+
+    public double getRadius() {
+        return radius;
     }
 
     public void add(PVector p) {
@@ -34,7 +45,7 @@ public class Path {
     }
 
     public Path clone() {
-        Path p = new Path();
+        Path p = new Path(getRadius());
         for (PVector v : coords) {
             p.add(v.copy());
         }
@@ -45,5 +56,13 @@ public class Path {
         Path c = clone();
         Collections.reverse(c.coords);
         return c;
+    }
+
+    public PVector first() {
+        return this.coords.get(0);
+    }
+
+    public PVector last() {
+        return this.coords.get(this.coords.size() - 1);
     }
 }

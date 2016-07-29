@@ -25,7 +25,7 @@ public class CityGraph {
     public int strokeColor = 0xffffffff;
     public int strokeThickness = 1;
 
-    private LatLon[] bound;
+//    private LatLon[] bound;
 
     PVector topLeft;
     PVector rightBottom;
@@ -39,38 +39,18 @@ public class CityGraph {
         graph = new Graph();
     }
 
-    public void loadFeatures(IFeatureCollection fc, IProjector projector) {
-        ArrayList<Feature> features = fc.getFeatures();
-
-        bound = fc.bounds();
-        topLeft = projector.project(bound[0]);
-        rightBottom = projector.project(bound[1]);
-
+    public void createRoad(Path path) {
         GraphEdge edge;
-        for (Feature f : features) {
-            Path path = new Path();
-            f.geometry.coords
-                    .stream()
-                    .map(projector::project)
-                    .forEach(path::add);
 
-            PVector first = projector.project(f.geometry.first());
-            PVector last = projector.project(f.geometry.last());
+        Crossroad cr1 = getCrossroadAt(path.first());
+        Crossroad cr2 = getCrossroadAt(path.last());
+        float weight = cr1.coord.dist(cr2.coord);
 
-            Crossroad cr1 = getCrossroadAt(first);
-            Crossroad cr2 = getCrossroadAt(last);
-            float weight = cr1.coord.dist(cr2.coord);
+        edge = addGraphEdge(cr1.node.id(), cr2.node.id(), weight);
+        addRoad(new Road(path, cr1, cr2, edge));
 
-            edge = addGraphEdge(cr1.node.id(), cr2.node.id(), weight);
-            addRoad(new Road(path.coords, cr1, cr2, edge));
-
-            edge = addGraphEdge(cr2.node.id(), cr1.node.id(), weight);
-            addRoad(new Road(path.reverse().coords, cr2, cr1, edge));
-        }
-    }
-
-    public void addRoad(Road road) {
-        roads.add(road);
+        edge = addGraphEdge(cr2.node.id(), cr1.node.id(), weight);
+        addRoad(new Road(path.reverse(), cr2, cr1, edge));
     }
 
     public Road getRoad(GraphEdge edge) {
@@ -83,6 +63,10 @@ public class CityGraph {
     public PVector getGraphNodeCoord(GraphNode node) {
         Crossroad cr = crossroads.get(node.id());
         return cr.coord;
+    }
+
+    private void addRoad(Road road) {
+        roads.add(road);
     }
 
     private GraphNode addGraphNode(int id, float x, float y) {
@@ -122,24 +106,10 @@ public class CityGraph {
         return getCrossroadIndex(cr.coord);
     }
 
-    // void drawCrossroads(){
-    //   pushStyle();
-
-    //   for (com.tmshv.agents.core.Crossroad cr : this.crossroads) {
-    //     noStroke();
-    //     fill(255, 30);
-
-    //     float s = map(cr.roads.mass(), 0, 10, 10, 30);
-    //     PVector p = projector.project(cr.coord);
-    //     ellipse(p.x, p.y, s, s);
-    //   }
-    //   popStyle();
-    // }
-
     public LatLon getCenter() {
         return new LatLon(
-                (bound[0].lat + bound[1].lat) / 2,
-                (bound[0].lon + bound[1].lon) / 2
+//                (bound[0].lat + bound[1].lat) / 2,
+//                (bound[0].lon + bound[1].lon) / 2
         );
     }
 
@@ -185,7 +155,7 @@ public class CityGraph {
         GraphEdge nearest = findNearestGraphEdgeTo(v);
         if (nearest != null) {
             for (Road r : roads) {
-                if (r.edge == nearest) return r;
+                if (r.getEdge() == nearest) return r;
             }
         }
         return null;

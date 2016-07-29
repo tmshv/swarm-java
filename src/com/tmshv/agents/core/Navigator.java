@@ -32,11 +32,21 @@ public  class Navigator {
     }
 
     public Route navigate(LatLon from, LatLon to) {
+        PVector fromV = proj.project(from);
+        PVector toV = proj.project(to);
+        return navigate(fromV, toV);
+    }
+
+    public Route navigate(Path path) {
+        PVector from = path.first();
+        PVector to = path.last();
+        return navigate(from, to);
+    }
+
+    public Route navigate(PVector from, PVector to) {
         try{
-            PVector fromV = proj.project(from);
-            PVector toV = proj.project(to);
-            Crossroad crFrom = this.simulation.graph(graphIndex).findNearestCrossroadTo(fromV);
-            Crossroad crTo = this.simulation.graph(graphIndex).findNearestCrossroadTo(toV);
+            Crossroad crFrom = this.simulation.graph(graphIndex).findNearestCrossroadTo(from);
+            Crossroad crTo = this.simulation.graph(graphIndex).findNearestCrossroadTo(to);
 
             return navigate(crFrom, crTo);
         }catch (Exception e){

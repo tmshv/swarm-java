@@ -1,12 +1,12 @@
 import com.tmshv.agents.core.*;
+import com.tmshv.agents.utils.ColorUtil;
+import com.tmshv.agents.utils.GraphUtils;
 import geojson.*;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.data.Table;
-import com.tmshv.agents.utils.ColorUtil;
-import com.tmshv.agents.utils.GraphUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -15,12 +15,9 @@ public class App extends PApplet {
     private Crossroad crossroadStart = null;
     private Crossroad crossroadFinish = null;
 
-    private Navigator navigator;
-
-    private UI ui;
-
     private boolean drawRoads = true;
     private boolean drawAgents = true;
+    private boolean drawAgentInfo = false;
     private boolean drawTracks = true;
     private boolean drawHistoryTracks = true;
     private boolean drawAttractors = true;
@@ -31,9 +28,11 @@ public class App extends PApplet {
 
     private ArrayList<PVector> currentRoute;
 
+    UI ui;
     Simulation simulation;
     Camera camera;
     SphericalMercator projector;
+    Navigator navigator;
 
     LatLon cursorCoord;
     PVector cursor;
@@ -60,9 +59,8 @@ public class App extends PApplet {
         EmitterFactory.init(projector, simulation);
         AgentFactory.init(this, projector, simulation, navigator);
 
-//        centerCoord = new LatLon(55.74317f, 37.61516f);
-        centerCoord = new LatLon(55.74141f, 37.614784f);
-        cursorCoord = new LatLon(55.74317f, 37.61516f);
+        centerCoord = new LatLon();
+        cursorCoord = new LatLon();
         cursor = new PVector();
 
         pointCloud = new ArrayList<>();
@@ -78,22 +76,11 @@ public class App extends PApplet {
         cursor = projector.project(cursorCoord);
         cursor.z = ui.cursorHeight;
 
-//        if (mousePressed) {
-//            if (mouseButton == LEFT) setStartPoint(mouse);
-//            if (mouseButton == RIGHT) setEndPoint(mouse);
-//
-//            if (crossroadStart != null && crossroadFinish != null) {
-//                com.tmshv.agents.core.Route r = navigator.navigate(crossroadStart, crossroadFinish);
-//                if (r != null) currentRoute = r.bake();
-//            }
-//        }
-
         pushMatrix();
         rotateX(ui.rotation);
         rotateZ(ui.rotationZ);
         camera.update(this);
         translate(0, 0, ui.positionZ);
-        translate(0, height / 2);
         translate(width / 2, height / 2);
 
         simulation.update();
@@ -108,10 +95,11 @@ public class App extends PApplet {
             if (a instanceof Tweet) drawTweet((Tweet) a);
             else drawAttractor(a);
         });
-//        simulation.agents.forEach(this::drawAgentInfo);
 
-        IAgent nearest = simulation.getNearestAgent(cursor);
-        if( nearest != null) drawAgentInfo(nearest);
+        if(drawAgentInfo){
+            IAgent nearest = simulation.getNearestAgent(cursor);
+            if (nearest != null) drawAgentInfo(nearest);
+        }
 
         //Draw cursor
         pushStyle();
@@ -122,8 +110,6 @@ public class App extends PApplet {
 
         popMatrix();
         drawUI();
-
-        saveFrame("data/iaac-####.jpg");
     }
 
     private void cross(int i, float x, float y, float z) {
@@ -166,13 +152,34 @@ public class App extends PApplet {
         });
     }
 
+    private CityGraph loadFeatures(IFeatureCollection features) {
+        CityGraph graph = new CityGraph();
+        for (Feature f : features.getFeatures()) {
+            Path path = new Path();
+            f.geometry.coords
+                    .stream()
+                    .map(projector::project)
+                    .forEach(path::add);
+            graph.createRoad(path);
+        }
+//        features.getFeatures()
+//                .forEach(f -> {
+//                    Path path = new Path();
+//                    f.geometry.coords
+//                            .stream()
+//                            .map(projector::project)
+//                            .forEach(path::add);
+//                    graph.createRoad(path);
+//                });
+        return graph;
+    }
+
     void loadRoadLayer(String filename, String name, int color, int thickness) {
         IFeatureCollection geo;
         geo = new GeoJSON(loadJSONObject(filename));
         geo = new FeatureExploder(geo);
         geo = new FeatureOptimizer(geo);
-        CityGraph graph = new CityGraph();
-        graph.loadFeatures(geo, projector);
+        CityGraph graph = loadFeatures(geo);
         graph.strokeColor = color;
         graph.strokeThickness = thickness;
         simulation.addGraphLayer(graph, name);
@@ -198,8 +205,6 @@ public class App extends PApplet {
             float lon = row.getFloat("lon");
             int followers = row.getInt("followers");
 
-//            followers *= 100;
-
             PVector loc = projector.project(new LatLon(lat, lon));
             Tweet a = new Tweet(loc, row.getString("tweet"), row.getString("username"), followers);
             a.setColor(color);
@@ -218,7 +223,6 @@ public class App extends PApplet {
 
     private LatLon getLatLonCursor() {
         return cursorCoord;
-//        return camera.getCoordAtScreen(mouseX, mouseY);
     }
 
 
@@ -266,16 +270,13 @@ public class App extends PApplet {
 
     private void drawCityAgents(boolean drawVehicle, boolean drawTrack) {
         simulation.agents
-//                .stream()
-//                .map(a -> (com.tmshv.agents.core.Agent) a)
-//                .filter(a -> a != null)
                 .forEach(a -> {
                     if (drawTrack) drawTrack(a.getTrack());
                     if (drawVehicle) drawAgent(a);
                 });
     }
 
-    private void drawAgent(IAgent agent) {
+    protected void drawAgent(IAgent agent) {
         int color = agent.getColor();
         stroke(color);
         strokeWeight(agent.getMass());
@@ -293,8 +294,6 @@ public class App extends PApplet {
             line(loc.x, loc.y, loc.z, loc.x, loc.y, loc.z + h);
 
             float r = map(attractor.getMass(), 5, 15, 1, 3);
-
-//            image(tree, loc.x, loc.y, r, r);
 
             fill(ColorUtil.setAlpha(attractor.getColor(), 30));
             pushMatrix();
@@ -315,6 +314,7 @@ public class App extends PApplet {
         PVector loc = agent.getLocation();
         pushStyle();
         stroke(color);
+        noFill();
 //        stroke(0xcc000000);
         strokeWeight(1);
 //        joint(agent.getLocation(), cursor);
@@ -355,17 +355,29 @@ public class App extends PApplet {
     }
 
     private void drawGraph(CityGraph graph) {
-        pushStyle();
-        stroke(graph.strokeColor);
-        strokeWeight(graph.strokeThickness);
-        graph.roads.forEach(this::renderRoad);
-        popStyle();
+        graph.roads.forEach(path -> drawPath(path.getPath(), graph.strokeColor));
     }
 
-    private void renderRoad(Path road) {
+    private void drawPath(Path road, int color) {
+        pushStyle();
+        noFill();
+
+        float weight = (float) road.getRadius();
+        if (weight > 0) {
+            stroke(ColorUtil.setAlpha(color, 10));
+            strokeWeight(weight);
+            beginShape();
+            road.coords.forEach(v -> vertex(v.x, v.y, v.z));
+            endShape();
+        }
+
+        stroke(color);
+        strokeWeight(1);
         beginShape();
         road.coords.forEach(v -> vertex(v.x, v.y, v.z));
         endShape();
+
+        popStyle();
     }
 
     private void joint(PVector c1, PVector c2) {
@@ -409,6 +421,7 @@ public class App extends PApplet {
         if (key == '5') drawAttractors = !drawAttractors;
         if (key == '6') drawTweets = !drawTweets;
         if (key == '7') drawPointCloud = !drawPointCloud;
+        if (key == '8') drawAgentInfo = !drawAgentInfo;
     }
 
     private void bakeGraph() {

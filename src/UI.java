@@ -33,8 +33,7 @@ public class UI {
         ui = new ControlP5(app);
         ui.setAutoDraw(false);
 
-//        float pz = -68.57f;
-        float pz = 577f;
+        float pz = 0;
 
 //        float value = 0.93f;
         float value = 0;
@@ -50,6 +49,10 @@ public class UI {
         addSpace();
         addSlider("pcScale", 0.0006142857f, 0, .005f);
         addSlider("pcRot", 0.57f, 0, (float) Math.PI);
+    }
+
+    void setValue(String name, float value) {
+        ui.getController(name).setValue(value);
     }
 
     void update() {

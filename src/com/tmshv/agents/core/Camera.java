@@ -13,14 +13,14 @@ import static processing.core.PApplet.max;
  * @author tmshv
  */
 public class Camera {
-    LatLon target;
+    PVector target;
     IProjector projector;
     PVector offset;
 
     private int zoom = 1;
 
     public Camera(IProjector p) {
-        target = new LatLon();
+        target = new PVector();
         projector = p;
         offset = new PVector();
     }
@@ -30,26 +30,29 @@ public class Camera {
     }
 
     public LatLon getCoordAtScreen(float x, float y) {
-        PVector coord = projector.project(target);
+        PVector coord = target.copy();
         coord.sub(offset);
         coord.x += x;
         coord.y += y;
         return projector.unproject(coord);
     }
 
-    public void moveTarget(float lat, float lon) {
-        this.target.lat += lat;
-        this.target.lon += lon;
+    public void moveTarget(float x, float y) {
+        this.target.x += x;
+        this.target.y += y;
     }
 
     public void lookAt(LatLon target) {
-        this.target.setLatLon(target);
+        this.target.set(projector.project(target));
+    }
+
+    public void lookAt(PVector coord) {
+        target.set(coord);
     }
 
     public void update(PApplet app) {
         app.translate(offset.x, offset.y);
-        PVector coord = projector.project(target);
-        app.translate(-coord.x, -coord.y);
+        app.translate(-target.x, -target.y);
     }
 
     public void print() {

@@ -1,6 +1,5 @@
 package com.tmshv.agents.core;
 
-import com.tmshv.agents.core.Agent;
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ class Boids extends Agent {
     float coefSeparation = 1.0f;
 
     Boids(float maxSpeed, float maxForce, int color) {
-        super("boid", maxForce, maxSpeed, color);
+        super("boid", maxSpeed, maxForce, color);
         boids = new ArrayList<>();
     }
 

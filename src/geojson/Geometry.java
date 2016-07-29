@@ -22,7 +22,7 @@ public class Geometry {
 
     public Geometry(JSONObject geometry) {
         this.type = geometry.getString("type");
-        this.coords = new ArrayList<LatLon>();
+        this.coords = new ArrayList<>();
 
         switch (this.type){
             case "LineString":
@@ -36,7 +36,7 @@ public class Geometry {
     }
 
     public ArrayList<LatLon> getInnerCoords() {
-        ArrayList<LatLon> c = new ArrayList<LatLon>();
+        ArrayList<LatLon> c = new ArrayList<>();
         for (int i = 1; i < coords.size() - 1; i++) {
             c.add(coords.get(i));
         }
