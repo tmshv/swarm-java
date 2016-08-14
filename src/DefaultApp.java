@@ -41,41 +41,41 @@ public class DefaultApp extends App{
 //        setStartPoint(new LatLon(55.73898f, 37.605858f));
 //        setEndPoint(new LatLon(55.739960443216781f, 37.617145380088019f));
 
-//        com.tmshv.agents.core.Route r = navigator.navigate(crossroadStart, crossroadFinish);
+//        com.tmshv.swarm.core.Route r = navigator.navigate(crossroadStart, crossroadFinish);
 //        if (r != null) currentRoute = r.bake();
 
-//        com.tmshv.agents.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        com.tmshv.agents.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        com.tmshv.agents.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        com.tmshv.agents.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
-//        com.tmshv.agents.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        com.tmshv.swarm.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        com.tmshv.swarm.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        com.tmshv.swarm.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        com.tmshv.swarm.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
+//        com.tmshv.swarm.core.AgentFactory.createFlyAgent(new LatLon(55.74433f, 37.615776f));
 
-//        com.tmshv.agents.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
 
-//        com.tmshv.agents.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), new LatLon(55.741013f, 37.617157f));
 
-//        com.tmshv.agents.core.AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
-
-
-//        com.tmshv.agents.core.EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
-//        com.tmshv.agents.core.EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
+//        com.tmshv.swarm.core.AgentFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 30);
 
 
-//        com.tmshv.agents.core.EmitterFactory.createBike(new LatLon(55.746178f, 37.615578f), 10 * 1000);
+//        com.tmshv.swarm.core.EmitterFactory.createBoids(new LatLon(55.746178f, 37.615578f), "bird", 20, 30 * 1000);
+//        com.tmshv.swarm.core.EmitterFactory.createBoids(new LatLon(55.742428f, 37.612133f), "bird", 10, 20 * 1000);
 
-//        com.tmshv.agents.core.EmitterFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), 10 * 1000);
 
-//        simulation.addAttractor(new com.tmshv.agents.core.Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
+//        com.tmshv.swarm.core.EmitterFactory.createBike(new LatLon(55.746178f, 37.615578f), 10 * 1000);
 
-//        com.tmshv.agents.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createPedestrian(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
-//        com.tmshv.agents.core.AgentFactory.createTransport(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.EmitterFactory.createPedestrian(new LatLon(55.746178f, 37.615578f), 10 * 1000);
+
+//        simulation.addAttractor(new com.tmshv.swarm.core.Attractor("a", 100, projector.project(new LatLon(55.73998f, 37.616058f))));
+
+//        com.tmshv.swarm.core.AgentFactory.createBike(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createPedestrian(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
+//        com.tmshv.swarm.core.AgentFactory.createTransport(new LatLon(55.743732f, 37.60762f), new LatLon(55.741013f, 37.617157f));
     }
 }

@@ -1,7 +1,7 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
 import processing.core.PVector;
-import com.tmshv.agents.utils.ColorUtil;
+import com.tmshv.swarm.utils.ColorUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

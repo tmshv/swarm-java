@@ -1,4 +1,4 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
 import geojson.LatLon;
 import processing.core.PVector;

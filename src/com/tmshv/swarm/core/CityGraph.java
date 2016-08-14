@@ -1,14 +1,11 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
-import geojson.Feature;
-import geojson.IFeatureCollection;
-import geojson.IProjector;
 import geojson.LatLon;
 import pathfinder.Graph;
 import pathfinder.GraphEdge;
 import pathfinder.GraphNode;
 import processing.core.PVector;
-import com.tmshv.agents.utils.GeometryUtils;
+import com.tmshv.swarm.utils.GeometryUtils;
 
 import java.util.ArrayList;
 

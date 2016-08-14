@@ -1,6 +1,6 @@
-import com.tmshv.agents.core.*;
-import com.tmshv.agents.utils.ColorUtil;
-import com.tmshv.agents.utils.GraphUtils;
+import com.tmshv.swarm.core.*;
+import com.tmshv.swarm.utils.ColorUtil;
+import com.tmshv.swarm.utils.GraphUtils;
 import geojson.*;
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -381,7 +381,7 @@ public class App extends PApplet {
     }
 
     private void joint(PVector c1, PVector c2) {
-//        PVector c = com.tmshv.agents.utils.GeometryUtils.interpolate(c1, c2, 0.5f);
+//        PVector c = com.tmshv.swarm.utils.GeometryUtils.interpolate(c1, c2, 0.5f);
 //        float radius = c.mag() / 2;
 
         float radius = c1.dist(c2);

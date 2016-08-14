@@ -1,5 +1,4 @@
-import com.tmshv.agents.core.*;
-import geojson.GeoJSON;
+import com.tmshv.swarm.core.*;
 import processing.core.PApplet;
 import processing.core.PVector;
 

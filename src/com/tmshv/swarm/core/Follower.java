@@ -1,6 +1,6 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
-import com.tmshv.agents.utils.GeometryUtils;
+import com.tmshv.swarm.utils.GeometryUtils;
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class Follower extends Agent {
 //                currentNormal = b.copy();
                 // If we're at the end we really want the next line segment for looking ahead
                 // a = p.points.get((i+1)%p.points.mass());
-                // b = p.points.get((i+2)%p.points.mass());  // com.tmshv.agents.core.Path wraps around
+                // b = p.points.get((i+2)%p.points.mass());  // com.tmshv.swarm.core.Path wraps around
                 // dir = PVector.sub(b, a);
 //            }
 

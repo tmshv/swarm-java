@@ -1,9 +1,6 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
 import pathfinder.GraphEdge;
-import processing.core.PVector;
-
-import java.util.ArrayList;
 
 /**
  * Created at 14/07/16

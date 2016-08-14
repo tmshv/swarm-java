@@ -1,10 +1,10 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
 import geojson.IProjector;
 import geojson.LatLon;
 import processing.core.PApplet;
 import processing.core.PVector;
-import com.tmshv.agents.utils.ColorUtil;
+import com.tmshv.swarm.utils.ColorUtil;
 
 import java.util.Arrays;
 

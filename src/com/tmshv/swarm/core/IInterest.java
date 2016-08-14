@@ -1,4 +1,4 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
 /**
  * Created at 14/07/16

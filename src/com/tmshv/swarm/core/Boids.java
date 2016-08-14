@@ -1,4 +1,4 @@
-package com.tmshv.agents.core;
+package com.tmshv.swarm.core;
 
 import processing.core.PVector;
 
@@ -27,7 +27,7 @@ class Boids extends Agent {
 
     public void run() {
         flock();
-//        boids.forEach(com.tmshv.agents.core.Agent::run);
+//        boids.forEach(com.tmshv.swarm.core.Agent::run);
     }
 
     void addBoid(Agent agent) {
