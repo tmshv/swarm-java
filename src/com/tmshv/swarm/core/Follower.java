@@ -5,9 +5,6 @@ import processing.core.PVector;
 
 import java.util.ArrayList;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 /**
  * Created at 14/07/16
  *
@@ -25,6 +22,8 @@ public class Follower extends Agent {
     public double predictMult = 50;
     double dirMult = 5;
 
+    private int currentNode;
+
     public ArrayList<PVector> route;
 
     public Follower(String type, float speed, float force, int c) {
@@ -38,7 +37,7 @@ public class Follower extends Agent {
 //        } else {
 //            follow();
 //        }
-        follow();
+        follow2();
         super.run();
     }
 
@@ -47,10 +46,11 @@ public class Follower extends Agent {
     }
 
     public void move(ArrayList<PVector> route) {
+        this.currentNode = 0;
         this.route = route;
         if (this.route.size() > 0) {
 //            finishPoint = this.route.get(this.route.size() - 1);
-//            this.location.set(this.route.get(0));
+            this.location.set(this.route.get(0));
         }
     }
 
@@ -94,10 +94,10 @@ public class Follower extends Agent {
             //if (da + db > line.mag()+1) {
 //            if (currentNormal.x < min(a.x, b.x) || currentNormal.x > max(a.x, b.x) || currentNormal.y < min(a.y, b.y) || currentNormal.y > max(a.y, b.y)) {
 //                currentNormal = b.copy();
-                // If we're at the end we really want the next line segment for looking ahead
-                // a = p.points.get((i+1)%p.points.mass());
-                // b = p.points.get((i+2)%p.points.mass());  // com.tmshv.swarm.core.Path wraps around
-                // dir = PVector.sub(b, a);
+            // If we're at the end we really want the next line segment for looking ahead
+            // a = p.points.get((i+1)%p.points.mass());
+            // b = p.points.get((i+2)%p.points.mass());  // com.tmshv.agents.core.Path wraps around
+            // dir = PVector.sub(b, a);
 //            }
 
             double distance = predictLocation.dist(currentNormal);
@@ -123,5 +123,25 @@ public class Follower extends Agent {
         }
 
 //        seek(targetLocation);
+    }
+
+    /**
+     * http://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-path-following--gamedev-8769
+     */
+    public void follow2() {
+        if (route == null) return;
+        if (route.size() == 0) return;
+
+        float roadRadius = 20;
+
+        PVector target = route.get(currentNode);
+        if (location.dist(target) < roadRadius) {
+            currentNode++;
+            if (currentNode > route.size() - 1) {
+                currentNode = 0;
+            }
+        } else {
+            seek(target);
+        }
     }
 }

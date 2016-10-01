@@ -57,7 +57,7 @@ public class AgentFactory {
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
-        float maxSpeed = random(.001f, .002f);
+        float maxSpeed = random(.01f, .05f);
         float maxForce = 1;
         float mass = random(2, 5);
 
@@ -79,7 +79,7 @@ public class AgentFactory {
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
-        float maxSpeed = random(.002f, .003f);
+        float maxSpeed = random(.05f, .1f);
         float maxForce = 1;//random(.001f, .002f);
         float mass = random(2, 5);
 
@@ -96,7 +96,7 @@ public class AgentFactory {
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
-        float maxSpeed = random(.003f, .006f);
+        float maxSpeed = random(.1f, 1f);
         float maxForce = 1;
         float mass = random(2, 5);
 
@@ -113,7 +113,7 @@ public class AgentFactory {
         Route route = navigator.navigate(loc, target);
         if (route == null) return null;
 
-        float maxSpeed = random(.01f, .02f);
+        float maxSpeed = random(1f, 3f);
         float maxForce = 1;
         float mass = random(2, 5);
 

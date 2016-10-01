@@ -23,7 +23,7 @@ public class App extends PApplet {
     private boolean drawAttractors = true;
     private boolean drawTweets = false;
     private boolean drawPointCloud = false;
-    private float cameraStep = .000125f;
+    private float cameraStep = 10;
     private int currentGraphIndex = 0;
 
     private ArrayList<PVector> currentRoute;
@@ -44,7 +44,8 @@ public class App extends PApplet {
     private PImage img;
 
     public void settings() {
-        fullScreen(P3D);
+        size(1280, 800, P3D);
+//        fullScreen(P3D);
     }
 
     public void setup() {
@@ -279,7 +280,7 @@ public class App extends PApplet {
     protected void drawAgent(IAgent agent) {
         int color = agent.getColor();
         stroke(color);
-        strokeWeight(agent.getMass());
+        strokeWeight(2);
         PVector loc = agent.getLocation();
         point(loc.x, loc.y, loc.z);
     }
@@ -381,7 +382,7 @@ public class App extends PApplet {
     }
 
     private void joint(PVector c1, PVector c2) {
-//        PVector c = com.tmshv.swarm.utils.GeometryUtils.interpolate(c1, c2, 0.5f);
+//        PVector c = com.tmshv.agents.utils.GeometryUtils.interpolate(c1, c2, 0.5f);
 //        float radius = c.mag() / 2;
 
         float radius = c1.dist(c2);
@@ -399,10 +400,10 @@ public class App extends PApplet {
     }
 
     public void keyPressed() {
-        if (keyCode == UP) camera.moveTarget(cameraStep, 0);
-        if (keyCode == DOWN) camera.moveTarget(-cameraStep, 0);
-        if (keyCode == LEFT) camera.moveTarget(0, -cameraStep);
-        if (keyCode == RIGHT) camera.moveTarget(0, cameraStep);
+        if (keyCode == UP) camera.moveTarget(0, -cameraStep);
+        if (keyCode == DOWN) camera.moveTarget(0, cameraStep);
+        if (keyCode == LEFT) camera.moveTarget(-cameraStep, 0);
+        if (keyCode == RIGHT) camera.moveTarget(cameraStep, 0);
 
         if (key == ' ') saveFrame("app.jpg");
 

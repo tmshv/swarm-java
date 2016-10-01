@@ -1,4 +1,5 @@
 import com.tmshv.swarm.core.*;
+import geojson.GeoJSON;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -55,7 +56,12 @@ public class FollowPathApp extends App {
     }
 
     private void emitAgent() {
-        Follower a = AgentFactory.createFollower("agent", .3f, .01f, 0, 50f, 10f, 0xffff0000);
+        float maxSpeed = random(0.1f, 1);
+        float maxForce = random(.001f, .01f);
+//        maxSpeed = .3f;
+//        maxForce = .01f;
+
+        Follower a = AgentFactory.createFollower("agent", maxSpeed, maxForce, 0, 50f, 10f, 0xffff0000);
         a.setLifetime(10000);
         simulation.addAgent(a);
 
@@ -75,14 +81,14 @@ public class FollowPathApp extends App {
         Follower f = (Follower) agent;
 
         if (f != null) {
-            pushStyle();
-            noFill();
-            stroke(0x33ffffff);
-            strokeWeight(1);
-            beginShape();
-            f.route.forEach(v -> vertex(v.x, v.y, v.z));
-            endShape();
-            popStyle();
+//            pushStyle();
+//            noFill();
+//            stroke(0x33ffffff);
+//            strokeWeight(1);
+//            beginShape();
+//            f.route.forEach(v -> vertex(v.x, v.y, v.z));
+//            endShape();
+//            popStyle();
 
             pushStyle();
             strokeWeight(3);
@@ -92,25 +98,25 @@ public class FollowPathApp extends App {
             loc = f.getLocation();
             point(loc.x, loc.y, loc.z + 5);
 
-            stroke(0xffffffff);
-            loc = f.predictLocation;
-            point(loc.x, loc.y, loc.z + 5);
+//            stroke(0xffffffff);
+//            loc = f.predictLocation;
+//            point(loc.x, loc.y, loc.z + 5);
+//
+//            stroke(0xff00ffff);
+//            loc = f.normalLocation;
+//            point(loc.x, loc.y, loc.z + 5);
+//
+//            stroke(0xffffff00);
+//            loc = f.targetLocation;
+//            point(loc.x, loc.y, loc.z + 5);
 
-            stroke(0xff00ffff);
-            loc = f.normalLocation;
-            point(loc.x, loc.y, loc.z + 5);
-
-            stroke(0xffffff00);
-            loc = f.targetLocation;
-            point(loc.x, loc.y, loc.z + 5);
-
-            strokeWeight(1);
-            stroke(0x44ffffff);
-            line(f.normalLocation.x, f.normalLocation.y, f.predictLocation.x, f.predictLocation.y);
-
-            strokeWeight(1);
-            stroke(0x44ff0000);
-            line(f.getLocation().x, f.getLocation().y, f.predictLocation.x, f.predictLocation.y);
+//            strokeWeight(1);
+//            stroke(0x44ffffff);
+//            line(f.normalLocation.x, f.normalLocation.y, f.predictLocation.x, f.predictLocation.y);
+//
+//            strokeWeight(1);
+//            stroke(0x44ff0000);
+//            line(f.getLocation().x, f.getLocation().y, f.predictLocation.x, f.predictLocation.y);
 
             popStyle();
         }
